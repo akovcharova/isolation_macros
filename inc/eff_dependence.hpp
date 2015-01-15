@@ -1,5 +1,5 @@
-#ifndef H_ISOEFFPARAM
-#define H_ISOEFFPARAM
+#ifndef H_EFF_DEPENDENCE
+#define H_EFF_DEPENDENCE
 
 #include "small_tree.hpp"
 #include <string>
