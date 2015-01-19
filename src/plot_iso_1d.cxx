@@ -6,6 +6,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TLine.h"
+#include "TStyle.h"
 #include "TString.h"
 
 #include "styles.hpp"
@@ -48,56 +49,81 @@ public:
 };
 
 int main(){
-  styles style("1Dtitle"); style.setDefaultStyle();
+  styles style("1Dtitle"); style.setDefaultStyle();gStyle->SetPadTickY(1);
   vector<hfeats> vars;
   TCanvas can;
-  TString luminosity="5", folder="/cms2r0/manuelf/root/small/archive/ra4skim/";
+  TString luminosity="5", folder="/cms2r0/manuelf/root/small/archive/15-01-08/";
   // Reading ntuples
   vector<TChain *> chain;
   vector<sfeats> Samples; 
-  // Muon samples
+  // Base Iso samples
   Samples.push_back(sfeats(folder+"*T1tttt*1500_*PU20*", "T1tttt truth-matched", 4, 1, "mus_tru_tm&&mus_sigid"));
-  Samples.push_back(sfeats(folder+"*T1tttt*1500_*PU20*", "T1tttt non-truth-matched", kRed, 1, "!mus_tru_tm&&mus_sigid"));
-  Samples.push_back(sfeats(folder+"*TT*", "tt truth-matched", kGreen+2, 1, "mus_tru_tm&&mus_sigid"));
-  Samples.push_back(sfeats(folder+"*TT*", "tt non-truth-matched", kRed, 1, "!mus_tru_tm&&mus_sigid"));
-  // Electron samples
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt truth-matched", kGreen+2, 1, "mus_tru_tm&&mus_sigid"));
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt non-truth-matched", kRed, 1, "!mus_tru_tm&&mus_sigid"));
   Samples.push_back(sfeats(folder+"*T1tttt*1500_*PU20*", "T1tttt truth-matched", 4, 1, "els_tru_tm&&els_sigid&&els_ispf"));
-  Samples.push_back(sfeats(folder+"*T1tttt*1500_*PU20*", "T1tttt non-truth-matched", kRed, 1, "!els_tru_tm&&els_sigid&&els_ispf"));
-  Samples.push_back(sfeats(folder+"*TT*", "tt truth-matched", kGreen+2, 1, "els_tru_tm&&els_sigid&&els_ispf"));
-  Samples.push_back(sfeats(folder+"*TT*", "tt non-truth-matched", kRed, 1, "!els_tru_tm&&els_sigid&&els_ispf"));
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt truth-matched", kGreen+2, 1, "els_tru_tm&&els_sigid&&els_ispf"));
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt non-truth-matched", kRed, 1, "!els_tru_tm&&els_sigid&&els_ispf"));
 
-  for(unsigned sam(0); sam < Samples.size(); sam++){
+  // Non-truth-matched electrons broken down
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt non-prompt e", kRed, 1, "!els_tru_tm&&els_sigid&&els_ispf&&abs(els_tru_id)==11"));
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt fake e with no #tau#rightarrowhad", 4, 1, "!els_tru_tm&&els_sigid&&els_ispf&&abs(els_tru_id)!=11&&((mc_type&0x000F)*0x10<=(mc_type&0x00F0))"));
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/archive/15-01-14/*TTJet*", "tt fake e with #tau#rightarrowhad", 28, 1, "!els_tru_tm&&els_sigid&&els_ispf&&abs(els_tru_id)!=11&&((mc_type&0x000F)*0x10>(mc_type&0x00F0))"));
+
+  // Samples for truth-matching (DeltaR)
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/out/small_quick_SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1_MINIAODSIM_UCSB2299_v77.root", "Reconstructed muons", 2, 1, "mus_sigid"));
+  Samples.push_back(sfeats("/cms2r0/manuelf/root/small/out/small_quick_SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola_Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1_MINIAODSIM_UCSB2299_v77.root", "Reconstructed electrons", 4, 1, "els_sigid&&els_ispf"));
+
+
+ for(unsigned sam(0); sam < Samples.size(); sam++){
     chain.push_back(new TChain("tree"));
     chain[sam]->Add(Samples[sam].file);
   }
 
   vector<int> mus_tt_t1;
   mus_tt_t1.push_back(0);
+  mus_tt_t1.push_back(1);
   mus_tt_t1.push_back(2);
-  mus_tt_t1.push_back(3);
 
   vector<int> els_tt_t1;
+  els_tt_t1.push_back(3);
   els_tt_t1.push_back(4);
-  els_tt_t1.push_back(6);
-  els_tt_t1.push_back(7);
+  els_tt_t1.push_back(5);
 
-  // vars.push_back(hfeats("mus_ptrel_0",40,0,40, mus_tt_t1, "Muon p^{rel}_{T} (GeV)","ht>750&&met>200"));
-  // vars.push_back(hfeats("mus_ptrel_0",40,0,40, mus_tt_t1, "Muon p^{rel}_{T} (GeV)","ht>750&&met>200&&mus_reliso_r04>0.3"));
-  // vars.push_back(hfeats("mus_ptrel_0",40,0,40, mus_tt_t1, "Muon p^{rel}_{T} (GeV)","ht>750&&met>200&&mus_miniso_tr10>0.3"));
-  // vars.push_back(hfeats("mus_pt",50,0,400, mus_tt_t1, "Muon p_{T} (GeV)","ht>750&&met>200"));
-  // vars.push_back(hfeats("mus_reliso_r04",40,0,2, mus_tt_t1, "Muon relative isolation (R=0.4)","ht>750&&met>200"));
-  // vars.push_back(hfeats("min(mus_reliso_r02,mus_miniso_tr10)",40,0,2, mus_tt_t1, "Muon mini isolation (0.05<R<0.2)","ht>750&&met>200"));
+  vector<int> els_tt_ntm;
+  els_tt_ntm.push_back(4);
+  els_tt_ntm.push_back(6);
+  els_tt_ntm.push_back(7);
+  els_tt_ntm.push_back(8);
+
+  vector<int> mus_t1_dr;
+  mus_t1_dr.push_back(9);
+  vector<int> els_t1_dr;
+  els_t1_dr.push_back(10);
+
+  vars.push_back(hfeats("mus_tru_dr",50,0,0.5, mus_t1_dr, "min#DeltaR(#mu_{reco}, #mu_{true})","mus_pt>20",0.1));
+  vars.push_back(hfeats("els_tru_dr",50,0,0.5, els_t1_dr, "min#DeltaR(e_{reco}, e_{true})","els_pt>20",0.1));
+
+  vars.push_back(hfeats("mus_ptrel_0",40,0,40, mus_tt_t1, "Muon p^{rel}_{T} (GeV)","ht>750&&met>200"));
+  vars.push_back(hfeats("mus_ptrel_0",40,0,40, mus_tt_t1, "Muon p^{rel}_{T} (GeV)","ht>750&&met>200&&mus_reliso_r04>0.3"));
+  vars.push_back(hfeats("mus_ptrel_0",40,0,40, mus_tt_t1, "Muon p^{rel}_{T} (GeV)","ht>750&&met>200&&mus_miniso_tr10>0.3"));
+  vars.push_back(hfeats("mus_pt",50,0,400, mus_tt_t1, "Muon p_{T} (GeV)","ht>750&&met>200"));
+  vars.push_back(hfeats("mus_reliso_r04",40,0,2, mus_tt_t1, "Muon relative isolation (R=0.4)","mus_pt>=20&&ht>750"));
+  vars.push_back(hfeats("min(mus_reliso_r02,mus_miniso_tr10)",40,0,2, mus_tt_t1, "Muon mini isolation (0.05<R<0.2)","mus_pt>=20&&ht>750"));
 
   vars.push_back(hfeats("els_ptrel_0",40,0,40, els_tt_t1, "Electron p^{rel}_{T} (GeV)","ht>750&&met>200"));
   vars.push_back(hfeats("els_ptrel_0",40,0,40, els_tt_t1, "Electron p^{rel}_{T} (GeV)","ht>750&&met>200&&els_reliso_r03>0.1"));
   vars.push_back(hfeats("els_ptrel_0",40,0,40, els_tt_t1, "Electron p^{rel}_{T} (GeV)","ht>750&&met>200&&els_miniso_tr10>0.1"));
   vars.push_back(hfeats("els_pt",50,0,400, els_tt_t1, "Electron p_{T} (GeV)","ht>750&&met>200"));
-  vars.push_back(hfeats("els_reliso_r03",40,0,2, els_tt_t1, "Electron relative isolation (R=0.3)","ht>750&&met>200"));
-  vars.push_back(hfeats("min(els_reliso_r02,els_miniso_tr10)",40,0,2, els_tt_t1, "Electron mini isolation (0.05<R<0.2)","ht>750&&met>200"));
+  vars.push_back(hfeats("els_reliso_r03",40,0,2, els_tt_t1, "Electron relative isolation (R=0.3)","els_pt>=20&&ht>750"));
+  vars.push_back(hfeats("min(els_reliso_r02,els_miniso_tr10)",40,0,2, els_tt_t1, "Electron mini isolation (0.05<R<0.2)","els_pt>=20&&ht>750"));
+
+  // Non-truth-matched electrons broken down
+  vars.push_back(hfeats("els_reliso_r03",40,0,2, els_tt_ntm, "Electron relative isolation (R=0.3)","ht>750&&els_pt>=20"));
+  vars.push_back(hfeats("min(els_reliso_r02,els_miniso_tr10)",40,0,2, els_tt_ntm, "Electron mini isolation (0.05<R<0.2)","ht>750&&els_pt>=20"));
 
 
   float minLog = 0.04, maxLog = 10;
-  double legX = 0.35, legY = 0.87, legSingle = 0.075;
+  double legX = 0.44, legY = 0.89, legSingle = 0.075;
   double legW = 0.12, legH = legSingle*vars[0].samples.size();
   TLegend leg(legX, legY-legH, legX+legW, legY);
   leg.SetTextSize(0.07); leg.SetFillColor(0); leg.SetFillStyle(0); leg.SetBorderSize(0);
@@ -107,6 +133,7 @@ int main(){
   vector< vector<TH1D*> > histo[2];
   vector<TH1D*> varhisto;
   vector<float> nentries;
+  float totentries;
   TString hname, pname, variable, leghisto, totCut, title, ytitle;
   for(unsigned var(0); var<vars.size(); var++){
     cout<<endl;
@@ -133,6 +160,7 @@ int main(){
     //// Plotting lumi-weighted distributions in histo[0], and then area-normalized in histo[1] ///
     leg.Clear();
     nentries.resize(0);
+    totentries = 0;
     variable = vars[var].varname;
     float maxhisto(-999);
     for(unsigned sam(0); sam < vars[var].samples.size(); sam++){
@@ -145,6 +173,7 @@ int main(){
 					  histo[0][var][sam]->GetBinContent(vars[var].nbins)+
 					  histo[0][var][sam]->GetBinContent(vars[var].nbins+1));
       nentries.push_back(histo[0][var][sam]->Integral(1,vars[var].nbins));
+      totentries += nentries[sam];
       histo[0][var][sam]->SetXTitle(vars[var].title);
       ytitle = "Entries for "+luminosity+" fb^{-1}";
       if(vars[var].unit!="") {
@@ -229,9 +258,11 @@ int main(){
 	histo[1][var][sam]->SetYTitle("Entries (%)");
 	histo[1][var][sam]->Draw();
       } else histo[1][var][sam]->Draw("same");
+      // leghisto = Samples[isam].label+" ["+RoundNumber(nentries[sam]*100,1,totentries)+"%]";//+"%, #mu = ";
       leghisto = Samples[isam].label+" [#mu = ";
       int digits(1);
       leghisto += RoundNumber(histo[1][var][sam]->GetMean(),digits) + "]";
+      if(vars[var].varname.Contains("tru_dr")) leghisto = Samples[isam].label;
       leg.AddEntry(histo[1][var][sam], leghisto);
     } // Loop over samples
     leg.Draw(); 
@@ -241,6 +272,7 @@ int main(){
     pname = "eps/shapes_"+vars[var].tag+".eps";
     can.SaveAs(pname);
     histo[1][var][0]->SetMaximum(maxhisto*maxLog);
+    //histo[1][var][0]->SetMinimum(0.01);
     can.SetLogy(1);
     pname = "eps/log_shapes_"+vars[var].tag+".eps";
     can.SaveAs(pname);
