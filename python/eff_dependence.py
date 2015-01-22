@@ -1,7 +1,6 @@
 from ROOT import *
-# import AtlasStyle
 import os,array,sys
-from rebinTools import *
+from rebin_tools import *
 # from rootpy.interactive import wait
 
 ROOT.gStyle.SetOptStat(0)
@@ -12,9 +11,13 @@ varbins = {
   "pt":[10., 20., 30., 40., 50.,70., 90., 120., 150., 200., 300.],
   "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
   "njets":[1],
-  "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.]
+  "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.],
+  "met":[0.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.,1600.],
+  "pv":[10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.]
 }
 
+samples = ["ttbar"]
+samples = ["wjets"]
 samples = ["T1tttt1500", "ttbar"]
 
 for sample in samples:
@@ -53,6 +56,8 @@ for sample in samples:
         for j,iso in enumerate(['reliso','miniso']):
           h_num = rebin1D(fmc.Get("h_"+var+"_"+iso+mode+"_"+channel).Clone(), varbins[var])
           h_denom = rebin1D(fmc.Get("h_"+var+"_none"+mode+"_"+channel).Clone(), varbins[var])
+          #h_num = fmc.Get("h_"+var+"_"+iso+mode+"_"+channel).Clone()
+          #h_denom = fmc.Get("h_"+var+"_none"+mode+"_"+channel).Clone()
           totaldenom = h_denom.Integral()
           totalnum = h_num.Integral()
           h_num.SetDirectory(0)

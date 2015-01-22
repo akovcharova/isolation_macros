@@ -1,3 +1,6 @@
+// eff_dependence: calculates the dependence of the isolation efficiency in terms of
+//                 lepton pT, HT, njets, MJ, MET, npv
+
 #include "eff_dependence.hpp"
 #include <iostream>
 #include <fstream>
@@ -25,12 +28,13 @@ int main(){
   // const double iso_cut[2] = {0.05, 0.3}; //el, mu
 
   TString basedir = "/cms2r0/manuelf/root/small/archive/15-01-08/";
+
   vector<TString> samples;
   vector<TString> fnames;
   // samples.push_back("*_QCD_*"); fnames.push_back("qcd");
-  samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
-  // samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
-  samples.push_back("*-T1tttt_2J_mGl-1500_mLSP-100_*PU20*"); fnames.push_back("T1tttt1500");
+  // samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
+  samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
+  // samples.push_back("archive/signal/*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
   // samples.push_back("*_WJetsToLNu*"); fnames.push_back("wjets");
   // samples.push_back("*-T2tt_2J_mStop-650_mLSP-325_*"); fnames.push_back("T2tt650");
   // samples.push_back("*-T2tt_2J_mStop-850_mLSP-100_*"); fnames.push_back("T2tt850");
@@ -48,6 +52,8 @@ int main(){
     TH1D h_ht[3][channel::last][mode::last];
     TH1D h_njets[3][channel::last][mode::last];
     TH1D h_mj[3][channel::last][mode::last];
+    TH1D h_met[3][channel::last][mode::last];
+    TH1D h_pv[3][channel::last][mode::last];
     for (unsigned i=0; i<3; i++){
       for (unsigned j=0; j<channel::last; j++){ 
         for (unsigned k=0; k<mode::last; k++){ 
@@ -60,6 +66,8 @@ int main(){
           h_ht[i][j][k] = TH1D("h_ht_"+nm,"h_ht_"+nm+"; H_{T} [GeV];", 50, 0.,2500.); h_ht[i][j][k].Sumw2();
           h_njets[i][j][k] = TH1D("h_njets_"+nm,"h_njets_"+nm+"; jet multiplicity;", 20, -0.5,19.5); h_njets[i][j][k].Sumw2();
           h_mj[i][j][k] = TH1D("h_mj_"+nm,"h_mj_"+nm+"; sumJetMass [GeV];", 50, 0.,1400.); h_mj[i][j][k].Sumw2();
+          h_met[i][j][k] = TH1D("h_met_"+nm,"h_met_"+nm+"; MET [GeV];", 50, 0.,1600.); h_met[i][j][k].Sumw2();
+          h_pv[i][j][k] = TH1D("h_pv_"+nm,"h_pv_"+nm+"; n_{PV}^{true};", 50, 10.,60.); h_pv[i][j][k].Sumw2();
         }
       }
     }
@@ -90,6 +98,8 @@ int main(){
             h_ht[iiso][channel::el][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::el][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::el][this_mode].Fill(tree.mj_30(), weight);
+            h_met[iiso][channel::el][this_mode].Fill(tree.met(), weight);
+            h_pv[iiso][channel::el][this_mode].Fill(tree.ntrupv(), weight);
           }
         }
       }
@@ -107,6 +117,8 @@ int main(){
             h_ht[iiso][channel::mu][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::mu][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::mu][this_mode].Fill(tree.mj_30(), weight);
+            h_met[iiso][channel::mu][this_mode].Fill(tree.met(), weight);
+            h_pv[iiso][channel::mu][this_mode].Fill(tree.ntrupv(), weight);
           }
         }
       }
