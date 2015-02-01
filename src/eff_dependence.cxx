@@ -31,10 +31,10 @@ int main(){
 
   vector<TString> samples;
   vector<TString> fnames;
+  //samples.push_back("*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
+  samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
   // samples.push_back("*_QCD_*"); fnames.push_back("qcd");
-  // samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
-  samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
-  // samples.push_back("archive/signal/*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
+  //samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
   // samples.push_back("*_WJetsToLNu*"); fnames.push_back("wjets");
   // samples.push_back("*-T2tt_2J_mStop-650_mLSP-325_*"); fnames.push_back("T2tt650");
   // samples.push_back("*-T2tt_2J_mStop-850_mLSP-100_*"); fnames.push_back("T2tt850");
@@ -42,7 +42,7 @@ int main(){
   vector<TString> isotypes;       vector<double> el_isocut;      vector<double> mu_isocut;
   isotypes.push_back("none");     el_isocut.push_back(0.);       mu_isocut.push_back(0.);
   isotypes.push_back("reliso");   el_isocut.push_back(0.);       mu_isocut.push_back(0.);
-  isotypes.push_back("miniso");   el_isocut.push_back(0.1);      mu_isocut.push_back(0.05);
+  isotypes.push_back("miniso");   el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
 
   for (unsigned sample=0; sample<samples.size(); sample++) {
 
@@ -95,6 +95,7 @@ int main(){
             unsigned this_mode = mode::fake;
             if (tree.els_tru_tm()[iel]) this_mode = mode::eff;
             h_pt[iiso][channel::el][this_mode].Fill(tree.els_pt()[iel], weight);
+	    if(tree.els_pt()[iel]<20) continue;
             h_ht[iiso][channel::el][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::el][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::el][this_mode].Fill(tree.mj_30(), weight);
@@ -114,6 +115,7 @@ int main(){
             unsigned this_mode = mode::fake;
             if (tree.mus_tru_tm()[imu]) this_mode = mode::eff;
             h_pt[iiso][channel::mu][this_mode].Fill(tree.mus_pt()[imu], weight);
+	    if(tree.mus_pt()[imu]<20) continue;
             h_ht[iiso][channel::mu][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::mu][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::mu][this_mode].Fill(tree.mj_30(), weight);

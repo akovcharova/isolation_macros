@@ -28,10 +28,17 @@ int main(){
   vector<TString> v_tt;
   v_tt.push_back(folder+"/skim/small_TTJet_ht30_500_met200.root");
 
+  vector<TString> v_qcd;
+  v_qcd.push_back(folder+"/skim/small_qcd_ht30_500_met200.root");
+
   ////////////////////////// SAMPLES for the axes /////////////////////////
   vector<sample_class> tt_t1; 
   tt_t1.push_back(sample_class("T1tttt(1500,100)", v_t1));
   tt_t1.push_back(sample_class("t#bar{t}", v_tt));
+
+  vector<sample_class> qcd_t1; 
+  qcd_t1.push_back(sample_class("T1tttt(1500,100)", v_t1));
+  qcd_t1.push_back(sample_class("QCD", v_qcd));
 
 
 
@@ -39,11 +46,53 @@ int main(){
   vector<var_class> mj_vars;
   mj_vars.push_back(var_class("ht30",4000,0,"H_{T}^{30}",4,1));
   mj_vars.push_back(var_class("met",1500,0,"MET",2,1));
-  mj_vars.push_back(var_class("mj_30",1700,0,"M_{J}",8,1));
+  mj_vars.push_back(var_class("mj_30",2000,0,"M_{J}",8,1));
 
+  vector<var_class> mj_sizes;
+  mj_sizes.push_back(var_class("ht30",4000,0,"H_{T}^{30}",2,1));
+  mj_sizes.push_back(var_class("mj_r08",2200,0,"M_{J} R=0.8",8,1));
+  mj_sizes.push_back(var_class("mj_r10",2200,0,"M_{J} R=1.0",28,1));
+  mj_sizes.push_back(var_class("mj_30", 2200,0,"M_{J} R=1.2",4,1));
+  mj_sizes.push_back(var_class("mj_r14",2200,0,"M_{J} R=1.4",kMagenta+2,1));
+
+  vector<var_class> mj_cands;
+  mj_cands.push_back(var_class("ht30",4000,0,"H_{T}^{30}",2,1));
+  mj_cands.push_back(var_class("mj_cands",2200,0,"M_{J} pfcands",8,1));
+  mj_cands.push_back(var_class("mj_cands_trim",2200,0,"M_{J} pfcands trimmed",28,1));
+  mj_cands.push_back(var_class("mj_30", 2200,0,"M_{J} 30 GeV jets",4,1));
+
+  vector<var_class> mj_pt;
+  mj_pt.push_back(var_class("ht30",4000,0,"H_{T}^{30}",2,1));
+  mj_pt.push_back(var_class("mj_10",2200,0,"M_{J} 10 GeV jets",8,1));
+  mj_pt.push_back(var_class("mj_20",2200,0,"M_{J} 20 GeV jets",28,1));
+  mj_pt.push_back(var_class("mj_30", 2200,0,"M_{J} 30 GeV jets",4,1));
+  mj_pt.push_back(var_class("mj_40",2200,0,"M_{J} 40 GeV jets",kMagenta+2,1));
 
   ///////////////////// ROCs to plot /////////////////////
-  DrawROC(tt_t1, mj_vars, "ht30>500&&met>200&&njets30>=4", "mj");
+  vector<TString> vs_sam, vs_vars;
+  vector<vector<sample_class>*> v_sam; 
+  v_sam.push_back(&tt_t1); vs_sam.push_back("tt");
+  v_sam.push_back(&qcd_t1); vs_sam.push_back("qcd");
+
+  vector<vector<var_class>*> v_vars;
+  v_vars.push_back(&mj_vars); vs_vars.push_back("general");
+  v_vars.push_back(&mj_sizes); vs_vars.push_back("size");
+  v_vars.push_back(&mj_cands); vs_vars.push_back("cands");
+  v_vars.push_back(&mj_pt); vs_vars.push_back("pt");
+
+  TString cuts("ht30>500&&met>200&&njets30>=4");
+  for(unsigned ivar(0); ivar<v_vars.size(); ivar++){
+    for(unsigned isam(0); isam<v_sam.size(); isam++){
+      DrawROC(*(v_sam[isam]), *(v_vars[ivar]), cuts, "mj_"+vs_sam[isam]+"_"+vs_vars[ivar]);
+    }
+  }
+  // DrawROC(tt_t1, mj_vars, "ht30>500&&met>200&&njets30>=4", "mj_tt");
+  // DrawROC(qcd_t1, mj_vars, "ht30>500&&met>200&&njets30>=4", "mj_qcd");
+  // DrawROC(tt_t1, mj_sizes, "ht30>500&&met>200&&njets30>=4", "mj_tt_sizes");
+  // DrawROC(tt_t1, mj_cands, "ht30>500&&met>200&&njets30>=4", "mj_tt_cands");
+  // DrawROC(qcd_t1, mj_sizes, "ht30>500&&met>200&&njets30>=4", "mj_qcd_sizes");
+  // DrawROC(qcd_t1, mj_cands, "ht30>500&&met>200&&njets30>=4", "mj_qcd_cands");
+  // DrawROC(tt_t1, mj_pt, "ht30>500&&met>200&&njets30>=4", "mj_tt_pt");
 
 }
 
@@ -124,7 +173,8 @@ void DrawROC(vector<sample_class> samples, vector<var_class> vars, TString cuts,
   cuts.ReplaceAll("(",""); cuts.ReplaceAll("$","");  cuts.ReplaceAll(")",""); 
   cuts.ReplaceAll("[",""); cuts.ReplaceAll("]",""); 
   cuts.ReplaceAll("/","_"); cuts.ReplaceAll("*",""); cuts.ReplaceAll("&&","_");
-  cuts.ReplaceAll(">",""); cuts.ReplaceAll("<",""); cuts.ReplaceAll("=","");
+  cuts.ReplaceAll(">=","ge"); cuts.ReplaceAll("<=","se"); 
+  cuts.ReplaceAll(">","g"); cuts.ReplaceAll("<","s"); cuts.ReplaceAll("=","");
   cuts.ReplaceAll("+",""); 
   TString pname("eps/roc_"+tag+"_"+cuts+".eps");  
   can.Print(pname);
