@@ -1,5 +1,5 @@
 // eff_dependence: calculates the dependence of the isolation efficiency in terms of
-//                 lepton pT, HT, njets, MJ, MET, npv
+//                 lepton pT, HT, njets, MJ, MET, ntrupv
 
 #include "eff_dependence.hpp"
 #include <iostream>
@@ -27,34 +27,36 @@ int main(){
   // string isostr = "miniso"; 
   // const double iso_cut[2] = {0.05, 0.3}; //el, mu
 
-  TString basedir = "/cms2r0/manuelf/root/small/archive/15-01-08/";
+  TString basedir = "/cms5r0/manuelf/root/archive/15-01-30/";
 
   vector<TString> samples;
   vector<TString> fnames;
-  //samples.push_back("*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
+  samples.push_back("*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
   samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
   // samples.push_back("*_QCD_*"); fnames.push_back("qcd");
-  //samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
+  // samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
   // samples.push_back("*_WJetsToLNu*"); fnames.push_back("wjets");
   // samples.push_back("*-T2tt_2J_mStop-650_mLSP-325_*"); fnames.push_back("T2tt650");
   // samples.push_back("*-T2tt_2J_mStop-850_mLSP-100_*"); fnames.push_back("T2tt850");
 
-  vector<TString> isotypes;       vector<double> el_isocut;      vector<double> mu_isocut;
-  isotypes.push_back("none");     el_isocut.push_back(0.);       mu_isocut.push_back(0.);
-  isotypes.push_back("reliso");   el_isocut.push_back(0.);       mu_isocut.push_back(0.);
-  isotypes.push_back("miniso");   el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
+  vector<TString> isotypes;                   vector<double> el_isocut;      vector<double> mu_isocut;
+  isotypes.push_back("none");                 el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
+  isotypes.push_back("reliso");               el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
+  isotypes.push_back("miniso_tr10");          el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
+  isotypes.push_back("miniso_tr10_pfpu");     el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
+  isotypes.push_back("miniso_tr07");          el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
 
   for (unsigned sample=0; sample<samples.size(); sample++) {
 
     TFile fout("isolation_"+fnames[sample]+".root","RECREATE");
 
-    TH1D h_pt[3][channel::last][mode::last];
-    TH1D h_ht[3][channel::last][mode::last];
-    TH1D h_njets[3][channel::last][mode::last];
-    TH1D h_mj[3][channel::last][mode::last];
-    TH1D h_met[3][channel::last][mode::last];
-    TH1D h_pv[3][channel::last][mode::last];
-    for (unsigned i=0; i<3; i++){
+    TH1D h_pt[5][channel::last][mode::last];
+    TH1D h_ht[5][channel::last][mode::last];
+    TH1D h_njets[5][channel::last][mode::last];
+    TH1D h_mj[5][channel::last][mode::last];
+    TH1D h_met[5][channel::last][mode::last];
+    TH1D h_pv[5][channel::last][mode::last];
+    for (unsigned i=0; i<5; i++){
       for (unsigned j=0; j<channel::last; j++){ 
         for (unsigned k=0; k<mode::last; k++){ 
           TString nm;
@@ -95,7 +97,7 @@ int main(){
             unsigned this_mode = mode::fake;
             if (tree.els_tru_tm()[iel]) this_mode = mode::eff;
             h_pt[iiso][channel::el][this_mode].Fill(tree.els_pt()[iel], weight);
-	    if(tree.els_pt()[iel]<20) continue;
+	          if(tree.els_pt()[iel]<20) continue;
             h_ht[iiso][channel::el][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::el][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::el][this_mode].Fill(tree.mj_30(), weight);
@@ -115,7 +117,7 @@ int main(){
             unsigned this_mode = mode::fake;
             if (tree.mus_tru_tm()[imu]) this_mode = mode::eff;
             h_pt[iiso][channel::mu][this_mode].Fill(tree.mus_pt()[imu], weight);
-	    if(tree.mus_pt()[imu]<20) continue;
+	          if(tree.mus_pt()[imu]<20) continue;
             h_ht[iiso][channel::mu][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::mu][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::mu][this_mode].Fill(tree.mj_30(), weight);
@@ -151,12 +153,26 @@ bool passIsolation(const small_tree &tree, int ilep, bool isElectron, bool isvet
       return tree.els_reliso_r02()[ilep] < iso_cut;
     else 
       return tree.mus_reliso_r02()[ilep] < iso_cut;
-  } else if (isotype=="miniso") {
+  } else if (isotype=="miniso_tr10") {
     if (isElectron) 
       return ((tree.els_miniso_tr10()[ilep] < iso_cut) 
              || (tree.els_reliso_r02()[ilep] < iso_cut));
     else 
       return ((tree.mus_miniso_tr10()[ilep] < iso_cut) 
+             || (tree.mus_reliso_r02()[ilep] < iso_cut));
+  } else if (isotype=="miniso_tr10_pfpu") {
+    if (isElectron) 
+      return ((tree.els_miniso_tr10_pfpu()[ilep] < iso_cut) 
+             || (tree.els_reliso_r02()[ilep] < iso_cut));
+    else 
+      return ((tree.mus_miniso_tr10_pfpu()[ilep] < iso_cut) 
+             || (tree.mus_reliso_r02()[ilep] < iso_cut));
+  } else if (isotype=="miniso_tr07") {
+    if (isElectron) 
+      return ((tree.els_miniso_tr07()[ilep] < iso_cut) 
+             || (tree.els_reliso_r02()[ilep] < iso_cut));
+    else 
+      return ((tree.mus_miniso_tr07()[ilep] < iso_cut) 
              || (tree.mus_reliso_r02()[ilep] < iso_cut));
   } else if (isotype=="none") {
     return true;

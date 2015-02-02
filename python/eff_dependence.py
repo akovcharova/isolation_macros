@@ -8,17 +8,30 @@ ROOT.gStyle.SetOptTitle(0)
 # ROOT.gStyle.SetPaintTextFormat(".0f");
 
 varbins = {
-  "pt":[10., 20., 30., 40., 50.,70., 90., 120., 150., 200., 300.],
-  "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
-  "njets":[1],
-  "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.],
-  "met":[0.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.,1600.],
-  "pv":[10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.]
+  # "pt":[10., 20., 30., 40., 50.,70., 90., 120., 150., 200., 300.],
+  # "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
+  # "njets":[1],
+  # "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.],
+  # "met":[0.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.,1600.],
+  "pv":[10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,45]
 }
 
-samples = ["ttbar"]
-samples = ["wjets"]
-samples = ["T1tttt1500", "ttbar"]
+samples = []
+samples.append("ttbar")
+samples.append("wjets")
+samples.append("T1tttt1500")
+
+isotypes = {} 
+isotypes['reliso'] = ("standard iso", 20, kRed, 1.2)
+# isotypes['miniso_tr07'] = ("mini-iso, k_{T} = 7GeV", 28, kBlue)
+isotypes['miniso_tr10'] = ("mini-iso, k_{T} = 10GeV", 24, kBlack)
+isotypes['miniso_tr10_pfpu'] = ("mini-iso, k_{T} = 10GeV, PFPU", 25, kGreen+3)
+
+legend_order = []
+legend_order.append('reliso')
+legend_order.append('miniso_tr07')
+legend_order.append('miniso_tr10')
+legend_order.append('miniso_tr10_pfpu')
 
 for sample in samples:
   if not os.path.exists("isolation_"+sample+".root"): 
@@ -39,63 +52,65 @@ for sample in samples:
       for channel in ['el','mu']:
 
         #------- LEGEND ---------
-        legX, legY = 0.6, 0.85
+        legX, legY = 0.5, 0.88
         if ("fake" in mode): 
-          legX, legY = 0.15, 0.85 
+          legX, legY = 0.15, 0.88
         # if (channel=='mu'):
         #   legX, legY = 0.15, 0.85 
-        legW, legH = 0.3, 0.07*2.
+        legW, legH = 0.3, 0.07*3.
         leg = TLegend(legX, legY-legH, legX+legW, legY);
         leg.SetTextSize(0.048); 
         leg.SetFillColor(0); 
         leg.SetFillStyle(0); 
         leg.SetBorderSize(0);
         leg.SetTextFont(42);
+        leghead = ""
+        if ("ttbar" in sample): leghead = "t#bar{t}"
+        elif ("T1tttt1500" in sample): leghead = "SUSY T1tttt"
+        # leghead = leghead + ", {:.0f}".format(totaldenom)
+        # leghead = leghead + ", {:.0f}".format(totalnum)
 
-        h_eff = []
-        for j,iso in enumerate(['reliso','miniso']):
+        leg.SetHeader(leghead)
+
+        h_eff = {}
+        for j,iso in enumerate(isotypes.keys()):
+          print var, channel, iso, mode
           h_num = rebin1D(fmc.Get("h_"+var+"_"+iso+mode+"_"+channel).Clone(), varbins[var])
           h_denom = rebin1D(fmc.Get("h_"+var+"_none"+mode+"_"+channel).Clone(), varbins[var])
-          #h_num = fmc.Get("h_"+var+"_"+iso+mode+"_"+channel).Clone()
-          #h_denom = fmc.Get("h_"+var+"_none"+mode+"_"+channel).Clone()
           totaldenom = h_denom.Integral()
           totalnum = h_num.Integral()
           h_num.SetDirectory(0)
           h_denom.SetDirectory(0)
 
           pad.cd()
-          h_eff.append(TGraphAsymmErrors())
-          h_eff[j].BayesDivide(h_num,h_denom)
+          h_eff[iso] = TGraphAsymmErrors()
+          h_eff[iso].BayesDivide(h_num,h_denom)
           lowedge = 0.
           if ("fake" in mode): 
-            h_eff[j].GetYaxis().SetRangeUser(lowedge,1.1)
+            h_eff[iso].GetYaxis().SetRangeUser(lowedge,1.1)
           else: 
             lowedge = 0.5
-            h_eff[j].GetYaxis().SetRangeUser(lowedge,1.2)
-          if (iso=="reliso"):
-            h_eff[j].SetMarkerStyle(20)
-            h_eff[j].SetMarkerColor(kRed)
-            h_eff[j].SetMarkerSize(1.2)
-            h_eff[j].SetLineColor(kRed)
-            h_eff[j].SetLineWidth(2)
-            h_eff[j].GetXaxis().SetLabelSize(0.06)
-            h_eff[j].GetXaxis().SetTitleSize(0.06)
-            h_eff[j].GetXaxis().SetTitleOffset(1.05)
-            h_eff[j].GetYaxis().SetLabelSize(0.06)
-            h_eff[j].GetYaxis().SetTitleSize(0.06)
-            h_eff[j].GetYaxis().SetTitleOffset(1.)
-            h_eff[j].GetXaxis().SetTitle(h_denom.GetXaxis().GetTitle())
-            h_eff[j].GetYaxis().SetTitle("Prompt lepton efficiency")
-            if ("fake" in mode):  h_eff[j].GetYaxis().SetTitle("Non-prompt lepton efficiency")
+            h_eff[iso].GetYaxis().SetRangeUser(lowedge,1.2)
 
-            h_eff[j].Draw("ape")
+          h_eff[iso].SetMarkerStyle(isotypes[iso][1])
+          h_eff[iso].SetMarkerColor(isotypes[iso][2])
+          h_eff[iso].SetMarkerSize(1.2)
+          h_eff[iso].SetLineColor(isotypes[iso][2])
+          h_eff[iso].SetLineWidth(2)
+
+          if (j==0):
+            h_eff[iso].GetXaxis().SetLabelSize(0.06)
+            h_eff[iso].GetXaxis().SetTitleSize(0.06)
+            h_eff[iso].GetXaxis().SetTitleOffset(1.05)
+            h_eff[iso].GetYaxis().SetLabelSize(0.06)
+            h_eff[iso].GetYaxis().SetTitleSize(0.06)
+            h_eff[iso].GetYaxis().SetTitleOffset(1.)
+            h_eff[iso].GetXaxis().SetTitle(h_denom.GetXaxis().GetTitle())
+            h_eff[iso].GetYaxis().SetTitle("Prompt lepton efficiency")
+            if ("fake" in mode):  h_eff[iso].GetYaxis().SetTitle("Non-prompt lepton efficiency")
+            h_eff[iso].Draw("ape")
           else: 
-            h_eff[j].SetMarkerStyle(24)
-            h_eff[j].SetMarkerColor(kBlack)
-            h_eff[j].SetMarkerSize(1.2)
-            h_eff[j].SetLineColor(kBlack)
-            h_eff[j].SetLineWidth(2)
-            h_eff[j].Draw("pe same")
+            h_eff[iso].Draw("pe same")
 
           h_denom.SetLineColor(kGray)
           h_denom.SetLineStyle(2)
@@ -107,18 +122,11 @@ for sample in samples:
 
           for i in range(0,h_denom.GetNbinsX()): h_denom.SetBinContent(i+1, h_denom.GetBinContent(i+1)+lowedge)
           h_denom.Draw("histsame")
-          # h_eff[0].Draw("pe same")
-          # h_eff[1].Draw("pe same")
 
-        leghead = ""
-        if ("ttbar" in sample): leghead = "t#bar{t}"
-        elif ("T1tttt1500" in sample): leghead = "SUSY T1tttt"
-        # leghead = leghead + ", {:.0f}".format(totaldenom)
-        # leghead = leghead + ", {:.0f}".format(totalnum)
-
-        leg.SetHeader(leghead)
-        leg.AddEntry(h_eff[0], "standard isolation", "LP")
-        leg.AddEntry(h_eff[1], "mini-isolation", "LP")
+        
+        for iso in legend_order:
+          if (iso in isotypes.keys()):
+            leg.AddEntry(h_eff[iso], isotypes[iso][0], "LP")
 
         pad.cd()
         leg.Draw()

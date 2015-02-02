@@ -51,8 +51,9 @@ int main(){
   variables.push_back("std::vector<float> mus_miniso_10_ch"); // R_iso = 10./pT, charged PF only
   variables.push_back("std::vector<float> mus_miniso_15");   // R_iso = 15./pT
   variables.push_back("std::vector<float> mus_miniso_tr10"); // R_iso = max(0.05,min(0.3,10./pT))
-  variables.push_back("std::vector<float> mus_miniso_tr15"); // R_iso = max(0.05,min(0.3,15./pT))
-  variables.push_back("std::vector<float> mus_miniso_tr15_ch"); // R_iso = max(0.05,min(0.3,15./pT)), charged PF cands only
+  variables.push_back("std::vector<float> mus_miniso_tr07"); // R_iso = max(0.05,min(0.3,7./pT))
+  variables.push_back("std::vector<float> mus_miniso_tr07_ch"); // R_iso = max(0.05,min(0.3,7./pT)), charged PF cands only
+  variables.push_back("std::vector<float> mus_miniso_tr10_pfpu"); // R_iso = max(0.05,min(0.3,10./pT)), PF PU
   variables.push_back("std::vector<float> mus_ptrel_0");
   variables.push_back("std::vector<float> mus_mindr_0");
   variables.push_back("std::vector<float> mus_ptrel_25");
@@ -84,8 +85,9 @@ int main(){
   variables.push_back("std::vector<float> els_miniso_10_ch"); // R_iso = 10./pT, charged PF only
   variables.push_back("std::vector<float> els_miniso_15");   // R_iso = 15./pT
   variables.push_back("std::vector<float> els_miniso_tr10"); // R_iso = max(0.05,min(0.3,10./pT))
-  variables.push_back("std::vector<float> els_miniso_tr15"); // R_iso = max(0.05,min(0.3,15./pT))
-  variables.push_back("std::vector<float> els_miniso_tr15_ch"); // R_iso = max(0.05,min(0.3,15./pT)), charged PF cands only
+  variables.push_back("std::vector<float> els_miniso_tr07"); // R_iso = max(0.05,min(0.3,7./pT))
+  variables.push_back("std::vector<float> els_miniso_tr07_ch"); // R_iso = max(0.05,min(0.3,7./pT)), charged PF cands only
+  variables.push_back("std::vector<float> els_miniso_tr10_pfpu"); // R_iso = max(0.05,min(0.3,10./pT)), PF PU
   variables.push_back("std::vector<float> els_ptrel_0");
   variables.push_back("std::vector<float> els_mindr_0");
   variables.push_back("std::vector<float> els_ptrel_25");
@@ -100,7 +102,7 @@ int main(){
   variables.push_back("std::vector<bool> els_tru_tm");
   variables.push_back("std::vector<int> els_charge");
 
-    ///////////////////   Taus   //////////////////
+  ///////////////////   Taus   //////////////////
   variables.push_back("int ntaus");
   variables.push_back("int ntaus_mt100");
   variables.push_back("int ntaus_againstEMu");
@@ -114,6 +116,26 @@ int main(){
   variables.push_back("std::vector<int> taus_n_pfcands");
   variables.push_back("std::vector<int> taus_decayMode");
   variables.push_back("std::vector<float> taus_CombinedIsolationDeltaBetaCorrRaw3Hits");
+
+  ///////////////////   Tracks   //////////////////
+  variables.push_back("std::vector<int> tks_id");
+  variables.push_back("std::vector<float> tks_pt");
+  variables.push_back("std::vector<float> tks_eta");
+  variables.push_back("std::vector<float> tks_phi");
+  variables.push_back("std::vector<float> tks_r03_ch");
+  variables.push_back("std::vector<float> tks_r02_ch");
+  variables.push_back("std::vector<float> tks_mini_ch");
+  variables.push_back("std::vector<float> tks_r03_ne");
+  variables.push_back("std::vector<float> tks_r02_ne");
+  variables.push_back("std::vector<float> tks_mini_ne");
+  variables.push_back("std::vector<int> tks_tru_id");
+  variables.push_back("std::vector<float> tks_tru_dr");
+  variables.push_back("std::vector<float> tks_tru_dp");
+  variables.push_back("std::vector<bool> tks_from_w");
+  variables.push_back("std::vector<bool> tks_from_tau");
+  variables.push_back("std::vector<bool> tks_from_taulep");
+  variables.push_back("std::vector<bool> tks_from_tauhad");
+  variables.push_back("std::vector<int> tks_num_prongs");
 
   ///////////////////   Isolated tracks   //////////////////
   variables.push_back("int nisotk10");
@@ -146,16 +168,18 @@ int main(){
   variables.push_back("std::vector<float> jets_dphi_sum");
   variables.push_back("std::vector<bool> jets_bhad");
   variables.push_back("std::vector<bool> jets_blep");
+  variables.push_back("std::vector<bool> jets_bhad_tru");
+  variables.push_back("std::vector<bool> jets_blep_tru");
 
   ////////////////////   MC   ///////////////////
   variables.push_back("unsigned mc_type");
-  // variables.push_back("std::vector<float> mc_pt");
-  // variables.push_back("std::vector<float> mc_eta");
-  // variables.push_back("std::vector<float> mc_phi");
-  // variables.push_back("std::vector<float> mc_id");
-  // variables.push_back("std::vector<float> mc_momid");
-  // variables.push_back("std::vector<float> mc_gmomid");
-
+  variables.push_back("std::vector<float>  mc_pt");
+  variables.push_back("std::vector<float>  mc_eta");
+  variables.push_back("std::vector<float>  mc_phi");
+  variables.push_back("std::vector<int>    mc_id");
+  variables.push_back("std::vector<size_t> mc_mom");
+  //variables.push_back("std::vector<float> mc_momid");
+  //variables.push_back("std::vector<float> mc_gmomid");
 
   ///////////////////   Fat Jets   //////////////
   variables.push_back("int nfjets_10");  // for fjets_pt>50, all with skinny jets pt>10
