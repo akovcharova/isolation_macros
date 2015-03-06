@@ -72,6 +72,7 @@ int main(){
   TColor seal_brown(1010, 89/255.,38/255.,11/255.);
 
   TString folder="archive/15-03-03/skim/";
+  //TString folder="archive/15-03-03/";
   vector<TString> s_tt;
   s_tt.push_back(folder+"*_TTJet*");
   vector<TString> s_wjets;
@@ -119,8 +120,15 @@ int main(){
   mj_sam_lep.push_back(6);
   mj_sam_lep.push_back(7);
 
-  vars.push_back(hfeats("mt",20,0,600, mj_sam_lep, "m_{T} (GeV)","ht>500&&met>250&&nbm>=2&&njets>=6&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",150));
-  vars.push_back(hfeats("mj",20,0,1600, mj_sam_lep, "M_{J} (GeV)","ht>500&&met>250&&nbm>=2&&njets>=6&&mt>150&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",600));
+  //vars.push_back(hfeats("met",20,0,800, mj_sam_lep, "MET (GeV)","ht>500&&nbm>=2&&njets>=6&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",250));
+  //vars.push_back(hfeats("ht",35,0,3500, mj_sam_lep, "H_{T} (GeV)","met>250&&nbm>=2&&njets>=6&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",500));
+  vars.push_back(hfeats("njets",17,-0.5,16.5, mj_sam_lep, "Number of 40 GeV jets","ht>500&&met>250&&nbm>=2&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",5.5));
+  vars.push_back(hfeats("nbm",8,-0.5,7.5, mj_sam_lep, "Number of b-tags (CSVM)","ht>500&&met>250&&njets>=6&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",1.5));
+
+  // vars.push_back(hfeats("mt",20,0,600, mj_sam_lep, "m_{T} (GeV)","ht>500&&met>250&&nbm>=2&&njets>=6&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",150));
+  // vars.push_back(hfeats("mj",20,0,1600, mj_sam_lep, "M_{J} (GeV)","ht>500&&met>250&&nbm>=2&&njets>=6&&mt>150&&(Max$(els_pt*els_sigid*(els_miniso_tr10<0.1))>20||Max$(mus_pt*mus_sigid*(mus_miniso_tr10<0.4))>20)&&(nmus+nels)==1",600));
+
+
 
   TString cuts("ht>750&&met>250&&nbm>=2&&njets>=6&&(nmus+nels)==1");
   //vars.push_back(hfeats("Max$(fjets_r08_m)",40,0,800, mj_sam_lep, "Max(m_{J}^{R=0.8}) (GeV)",cuts));
