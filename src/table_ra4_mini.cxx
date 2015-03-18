@@ -15,7 +15,7 @@ using namespace std;
 vector<int> elcuts, mucuts;
 
 int main(){
-  string folder("archive/current/skim/");
+  string folder("archive/15-03-03/skim/");
 
   small_tree_quick ttbar(folder+"*TTJets*");
   small_tree_quick wjets(folder+"*_WJets*");
@@ -38,7 +38,8 @@ int main(){
   // isocuts.push_back("miniso_5_10");
   // isocuts.push_back("miniso_10_40");
   isocuts.push_back("Reliso");
-  isocuts.push_back("Mini iso");
+  isocuts.push_back("Mini iso (0.2)");
+  isocuts.push_back("Mini iso (0.4)");
   othercuts.push_back("lmt");
   othercuts.push_back("hmt");
   othercuts.push_back("hmt_hmj");
@@ -183,6 +184,13 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts,
 	w2.at(icut).back() += (weight*weight); 
       }
       icut++;
+      CountMiniIso(tree, nleps, mt, st, 0.1, 0.2);
+      if(nleps==lepcut && mt<maxmt && mt>=minmt && tree.mj() > minmj && tree.mj() < maxmj &&
+	 tree.nbm() >= minnb && tree.nbm() <= maxnb && tree.met() >= minmet) {
+	counts.at(icut).back() += weight; 
+	w2.at(icut).back() += (weight*weight); 
+      }
+      icut++;
       CountMiniIso(tree, nleps, mt, st, 0.1, 0.4);
       if(nleps==lepcut && mt<maxmt && mt>=minmt && tree.mj() > minmj && tree.mj() < maxmj &&
 	 tree.nbm() >= minnb && tree.nbm() <= maxnb && tree.met() >= minmet) {
@@ -317,24 +325,24 @@ void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st, floa
 void MakeTable(vector<vector<float> > &counts, vector<vector<float> > &w2,
 	       const vector<TString> &cuts,
 	       const vector<TString> &snames){
+  cout<<"\\begin{sidewaystable}[hp]\\centering"<<endl;
   for(size_t icut = 0; icut < counts.size(); ){
-    cout<<"\\begin{sidewaystable}[hp]"<<endl;
-    cout<<"\\centering\\begin{tabular}{l | rrrrrrrr|r | r";
-    if(icut==4) cout<<"r";
+    cout<<"\\begin{tabular}{l | rrrrrrrr|r | r";
+    if(icut==6) cout<<"r";
     cout<<" | r";
-    if(icut==4) cout<<"r";
+    if(icut==6) cout<<"r";
     cout<<"}\\hline\\hline"<<endl;
     cout << setw(10) << ' ' ;
     for(size_t isample = 0; isample<snames.size(); ++isample){
       cout << setw(10) << " & " << snames.at(isample);
       if(isample==counts.at(icut).size()-3)
 	cout << setw(10) << " & Bkg. ";
-      if(icut==4 && isample>=snames.size()-2)
+      if(icut==6 && isample>=snames.size()-2)
 	cout << setw(10) << " & ZBI ";
     }
     cout << "  \\\\ \\hline "<<endl;
-    vector<float> numbers[2], errors[2];
-    for(size_t count = 0; count < 2; count++, icut++){
+    vector<float> numbers[3], errors[3];
+    for(size_t count = 0; count < 3; count++, icut++){
       double B(0.), B2(0.);
       cout << setw(10) << cuts.at(icut) << ' ';
       for(size_t isample = 0; isample<counts.at(icut).size(); ++isample){
@@ -350,16 +358,17 @@ void MakeTable(vector<vector<float> > &counts, vector<vector<float> > &w2,
 	cout << setw(10) << " & "<<RoundNumber(Num,2) << ' ';
 	numbers[count].push_back(Num);
 	if(isample==counts.at(icut).size()-3){
+	  errors[count].push_back(-1);
 	  cout << setw(10) << " & "<<RoundNumber(B,2)<< " $\\pm$ "<< RoundNumber(sqrt(B2),2);
-	  cout << setw(10) << " & "<<RoundNumber(B,2);
+	  //cout << setw(10) << " & "<<RoundNumber(B,2);
 	  numbers[count].push_back(B);
 	  errors[count].push_back(B2);
 	} else if(isample>=counts.at(icut).size()-2){
 	   cout << " $\\pm$ "<< RoundNumber(sqrt(w2.at(icut).at(isample)),2);
 	   errors[count].push_back(w2.at(icut).at(isample));
-	} else errors[count].push_back(-1);
+	}  else errors[count].push_back(-1);
 	   
-	if((icut==4 || icut==5) && isample>=snames.size()-2){
+	if((icut==6 || icut==7 || icut==8) && isample>=snames.size()-2){
 	  Num = RooStats::NumberCountingUtils::BinomialExpZ(Num, B, 0.3);
 	  cout << setw(10) << " & " << RoundNumber(Num,2);
 	  numbers[count].push_back(Num);
@@ -371,13 +380,14 @@ void MakeTable(vector<vector<float> > &counts, vector<vector<float> > &w2,
     cout<< setw(10)<<"\\hline Increase ";
     for(size_t inum = 0; inum<numbers[0].size(); ++inum){
       //cout << setw(10) << " & "<<RoundNumber((numbers[1][inum]-numbers[0][inum])*100,1,numbers[0][inum]) << " ";
-      cout << setw(10) << " & "<<RoundNumber(numbers[1][inum]-numbers[0][inum],2) << " ";
-      if(errors[0][inum]>=0) cout<<"\\pm "<<RoundNumber(sqrt(errors[0][inum]+errors[1][inum]),2);
+      cout << setw(10) << " & "<<RoundNumber(numbers[2][inum]-numbers[1][inum],2) << " ";
+      if(errors[0][inum]>=0) cout<<"$\\pm$ "<<RoundNumber(sqrt(errors[1][inum]+errors[2][inum]),2);
     }
     cout << "  \\\\ \\hline\\hline"<<endl;
-    cout<<"\\end{tabular} \\end{sidewaystable}"<<endl;
+    cout<<"\\end{tabular} "<<endl;
     cout<<endl;
   }
+    cout<<" \\end{sidewaystable}"<<endl<<endl;
 }
 
 void MakePie(const vector<float> &counts,
