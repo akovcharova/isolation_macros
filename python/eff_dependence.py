@@ -9,30 +9,31 @@ ROOT.gStyle.SetOptTitle(0)
 
 varbins = {
   # "pt":[10., 20., 30., 40., 50.,70., 90., 120., 150., 200., 300.],
-  # "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
+   "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
   # "njets":[1],
   # "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.],
   # "met":[0.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.,1600.],
-  "pv":[10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,45]
+  #"pv":[10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,45]
 }
 
 samples = []
-samples.append("ttbar")
-samples.append("wjets")
+#samples.append("ttbar")
+#samples.append("wjets")
 samples.append("T1tttt1500")
 
 isotypes = {} 
-isotypes['reliso'] = ("standard iso", 20, kRed, 1.2)
-# isotypes['miniso_tr07'] = ("mini-iso, k_{T} = 7GeV", 28, kBlue)
-isotypes['miniso_tr10'] = ("mini-iso, k_{T} = 10GeV", 24, kBlack)
-isotypes['miniso_tr10_pfpu'] = ("mini-iso, k_{T} = 10GeV, PFPU", 25, kGreen+3)
 
 legend_order = []
-legend_order.append('reliso')
-legend_order.append('miniso_tr07')
 legend_order.append('miniso_tr10')
-legend_order.append('miniso_tr10_pfpu')
+legend_order.append('miniso_tr10_r03_vvl')
+#legend_order.append('reliso_trig')
+legend_order.append('miniso_tr10_r03_04')
+legend_order.append('reliso')
 
+leptons = ['electron', 'muon']
+
+can = TCanvas("can","",1000,600)
+pad = TPad("pad"," ",0.,0.,1.,1.)
 for sample in samples:
   if not os.path.exists("isolation_"+sample+".root"): 
     print "File for sample ",sample," not found. Skip."
@@ -40,8 +41,6 @@ for sample in samples:
   fmc = TFile("isolation_"+sample+".root","READ")
 
   for mode in ["","_fake"]:
-    can = TCanvas()
-    pad = TPad("pad"," ",0.,0.,1.,1.)
     pad.SetFillColor(0)
     pad.SetLeftMargin(0.12)
     pad.SetRightMargin(0.05)
@@ -50,23 +49,37 @@ for sample in samples:
 
     for var in varbins.keys():
       for channel in ['el','mu']:
+        if (channel == 'el'):
+          isotypes['reliso'] = ("I(R=0.3) < 0.16/0.21 [Veto WP]", 20, kRed, 1.2)
+          isotypes['miniso_tr10'] = ("I(mini) < 0.1 [No trig.]", 24, kBlack)
+          isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.5, I(mini) < 0.1 [VVVL trig.]", 25, kGreen+3)
+          #isotypes['reliso_trig'] = ("I_{ R=0.2} < 0.8, I_{ R=0.3} < 0.22/0.25", 25, kGreen+3)
+          isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.1 [Std trig.]", 25, kBlue)
+        else:
+          isotypes['reliso'] = ("I(R=0.4) < 0.2 [Loose WP]", 20, kRed, 1.2)
+          isotypes['miniso_tr10'] = ("I(mini) < 0.2 [No trig.]", 24, kBlack)
+          isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.0, I(mini) < 0.2 [VVVL trig.]", 25, kGreen+3)
+          #isotypes['reliso_trig'] = ("I_{ R=0.2} < 0.8, I_{ R=0.3} < 0.22/0.25", 25, kGreen+3)
+          isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.2 [Std trig.]", 25, kBlue)
+
+
 
         #------- LEGEND ---------
-        legX, legY = 0.5, 0.88
+        legX, legY = 0.4, 0.89
         if ("fake" in mode): 
           legX, legY = 0.15, 0.88
         # if (channel=='mu'):
         #   legX, legY = 0.15, 0.85 
-        legW, legH = 0.3, 0.07*3.
+        legW, legH = 0.2, 0.065*(len(legend_order)+1)
         leg = TLegend(legX, legY-legH, legX+legW, legY);
-        leg.SetTextSize(0.048); 
+        leg.SetTextSize(0.053); 
         leg.SetFillColor(0); 
         leg.SetFillStyle(0); 
         leg.SetBorderSize(0);
         leg.SetTextFont(42);
         leghead = ""
-        if ("ttbar" in sample): leghead = "t#bar{t}"
-        elif ("T1tttt1500" in sample): leghead = "SUSY T1tttt"
+        if ("ttbar" in sample): leghead = "#font[62]{t#bar{t}}"
+        elif ("T1tttt1500" in sample): leghead = "#font[62]{T1tttt(1500,100)}"
         # leghead = leghead + ", {:.0f}".format(totaldenom)
         # leghead = leghead + ", {:.0f}".format(totalnum)
 
@@ -90,7 +103,7 @@ for sample in samples:
             h_eff[iso].GetYaxis().SetRangeUser(lowedge,1.1)
           else: 
             lowedge = 0.5
-            h_eff[iso].GetYaxis().SetRangeUser(lowedge,1.2)
+            h_eff[iso].GetYaxis().SetRangeUser(lowedge,1.25)
 
           h_eff[iso].SetMarkerStyle(isotypes[iso][1])
           h_eff[iso].SetMarkerColor(isotypes[iso][2])
@@ -106,8 +119,11 @@ for sample in samples:
             h_eff[iso].GetYaxis().SetTitleSize(0.06)
             h_eff[iso].GetYaxis().SetTitleOffset(1.)
             h_eff[iso].GetXaxis().SetTitle(h_denom.GetXaxis().GetTitle())
-            h_eff[iso].GetYaxis().SetTitle("Prompt lepton efficiency")
-            if ("fake" in mode):  h_eff[iso].GetYaxis().SetTitle("Non-prompt lepton efficiency")
+            title = "Prompt electron efficiency"
+            if ("fake" in mode): title = title.replace('Prompt', 'Non-prompt')
+            if ("mu" in channel): title = title.replace('electron', 'muon')
+            h_eff[iso].GetYaxis().SetTitle(title)
+            h_eff[iso].SetMaximum(1.4)
             h_eff[iso].Draw("ape")
           else: 
             h_eff[iso].Draw("pe same")

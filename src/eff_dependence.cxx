@@ -32,19 +32,20 @@ int main(){
   vector<TString> samples;
   vector<TString> fnames;
   samples.push_back("*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
-  samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
+  //samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
   // samples.push_back("*_QCD_*"); fnames.push_back("qcd");
   // samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
   // samples.push_back("*_WJetsToLNu*"); fnames.push_back("wjets");
   // samples.push_back("*-T2tt_2J_mStop-650_mLSP-325_*"); fnames.push_back("T2tt650");
   // samples.push_back("*-T2tt_2J_mStop-850_mLSP-100_*"); fnames.push_back("T2tt850");
 
-  vector<TString> isotypes;                   vector<double> el_isocut;      vector<double> mu_isocut;
-  isotypes.push_back("none");                 el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
-  isotypes.push_back("reliso");               el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
-  isotypes.push_back("miniso_tr10");          el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
-  isotypes.push_back("miniso_tr10_pfpu");     el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
-  isotypes.push_back("miniso_tr07");          el_isocut.push_back(0.1);      mu_isocut.push_back(0.1);
+  vector<TString> isotypes;               vector<double> el_isocut;      vector<double> mu_isocut;
+  isotypes.push_back("none");             el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
+  isotypes.push_back("reliso");           el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
+  isotypes.push_back("miniso_tr10");      el_isocut.push_back(0.1);      mu_isocut.push_back(0.2);
+  isotypes.push_back("miniso_tr10_r03_vvl");      el_isocut.push_back(0.1);      mu_isocut.push_back(0.2);
+  isotypes.push_back("miniso_tr10_r03_04");      el_isocut.push_back(0.1);      mu_isocut.push_back(0.2);
+  //isotypes.push_back("reliso_trig");           el_isocut.push_back(0.);       mu_isocut.push_back(0.); //cut value will *not* be used
 
   for (unsigned sample=0; sample<samples.size(); sample++) {
 
@@ -97,7 +98,11 @@ int main(){
             unsigned this_mode = mode::fake;
             if (tree.els_tru_tm()[iel]) this_mode = mode::eff;
             h_pt[iiso][channel::el][this_mode].Fill(tree.els_pt()[iel], weight);
-	          if(tree.els_pt()[iel]<20) continue;
+	    if(tree.els_pt()[iel]<20) continue;
+	    if(iiso==3 && tree.els_reliso_r03()[iel] > 1.5) continue;
+	    //if(iiso==3 && tree.els_reliso_r02()[iel] > 0.8) continue;
+	    if(iiso==4 && tree.els_reliso_r03()[iel] > 0.4) continue;
+
             h_ht[iiso][channel::el][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::el][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::el][this_mode].Fill(tree.mj_30(), weight);
@@ -117,7 +122,11 @@ int main(){
             unsigned this_mode = mode::fake;
             if (tree.mus_tru_tm()[imu]) this_mode = mode::eff;
             h_pt[iiso][channel::mu][this_mode].Fill(tree.mus_pt()[imu], weight);
-	          if(tree.mus_pt()[imu]<20) continue;
+	    if(tree.mus_pt()[imu]<20) continue;
+	    if(iiso==3 && tree.mus_reliso_r03()[imu] > 1) continue;
+	    //if(iiso==3 && tree.mus_reliso_r02()[imu] > 1.2) continue;
+	    if(iiso==4 && tree.mus_reliso_r03()[imu] > 0.4) continue;
+
             h_ht[iiso][channel::mu][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::mu][this_mode].Fill(tree.njets(), weight);
             h_mj[iiso][channel::mu][this_mode].Fill(tree.mj_30(), weight);
@@ -139,12 +148,12 @@ int main(){
 
 bool passIsolation(const small_tree &tree, int ilep, bool isElectron, bool isveto, TString isotype, const double iso_cut){
 
-  if (isotype=="reliso"){ 
+  if (isotype.Contains("reliso")){ 
     if (isElectron){
       if (fabs(tree.els_eta()[ilep]) <= 1.479) 
-        return (tree.els_reliso_r03()[ilep] < (isveto ? 0.3313 : 0.2179));
+        return (tree.els_reliso_r03()[ilep] < (isveto ? 0.3313 : 0.164369));
       else 
-        return (tree.els_reliso_r03()[ilep] < (isveto ? 0.3816 : 0.254));
+        return (tree.els_reliso_r03()[ilep] < (isveto ? 0.3816 : 0.212604));
     } else {
       return tree.mus_reliso_r04()[ilep] < 0.2;//(isveto ? 0.2 : 0.12));
     }
@@ -153,7 +162,7 @@ bool passIsolation(const small_tree &tree, int ilep, bool isElectron, bool isvet
       return tree.els_reliso_r02()[ilep] < iso_cut;
     else 
       return tree.mus_reliso_r02()[ilep] < iso_cut;
-  } else if (isotype=="miniso_tr10") {
+  } else if (isotype.Contains("miniso_tr10")) {
     if (isElectron) 
       return ((tree.els_miniso_tr10()[ilep] < iso_cut) 
              || (tree.els_reliso_r02()[ilep] < iso_cut));
