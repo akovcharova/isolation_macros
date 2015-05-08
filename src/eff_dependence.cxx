@@ -76,7 +76,7 @@ int main(){
     }
 
 
-    small_tree tree((basedir+samples[sample]).Data());
+    small_tree_quick tree((basedir+samples[sample]).Data());
 
     const long nent = tree.GetEntries();
     cout<<"Number of events to run over: "<<nent<<endl;
@@ -146,7 +146,7 @@ int main(){
 }
 
 
-bool passIsolation(const small_tree &tree, int ilep, bool isElectron, bool isveto, TString isotype, const double iso_cut){
+bool passIsolation(const small_tree_quick &tree, int ilep, bool isElectron, bool isveto, TString isotype, const double iso_cut){
 
   if (isotype.Contains("reliso")){ 
     if (isElectron){

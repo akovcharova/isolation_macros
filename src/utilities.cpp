@@ -25,7 +25,7 @@
 using namespace std;
 
 // Returns cross section of sample in pb
-float cross_section(TString file){
+float cross_section(const TString &file){
   float xsec(0.);
 
   // From https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVgluglu
@@ -38,29 +38,44 @@ float cross_section(TString file){
   if(file.Contains("T2tt") && file.Contains("650_"))  xsec = 0.107045;
   if(file.Contains("T2tt") && file.Contains("850_"))  xsec = 0.0189612;
 
-  // https://cms-pdmv.cern.ch/mcm/public/restapi/requests/get/TOP-Fall13-00005
-  // says that it is 424.5 pb
-  if(file.Contains("TTJet") || file.Contains("TT_"))  xsec = 806.1;
+  if(file.Contains("SMS-T2tt_2J_mStop-425_mLSP-325"))  xsec = 1.31169;
+  if(file.Contains("SMS-T2tt_2J_mStop-500_mLSP-325"))  xsec = 0.51848;
+  if(file.Contains("SMS-T1bbbb_2J_mGl-1500_mLSP-100"))  xsec = 0.0141903;
+  if(file.Contains("SMS-T1bbbb_2J_mGl-1000_mLSP-900"))  xsec = 0.325388;
+  if(file.Contains("SMS-T1qqqq_2J_mGl-1400_mLSP-100"))  xsec = 0.0252977;
+  if(file.Contains("SMS-T1qqqq_2J_mGl-1000_mLSP-800"))  xsec = 0.325388;
+  if(file.Contains("SMS-T2bb_2J_mStop-600_mLSP-580"))  xsec = 0.174599;
+  if(file.Contains("SMS-T2bb_2J_mStop-900_mLSP-100"))  xsec = 0.0128895;
+
+  //  Cross-section taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+  // Alternative option: https://twiki.cern.ch/twiki/bin/view/Sandbox/FullNNLOcrossSections#Top_cross_section_for_13_TeV
+  if(file.Contains("TTJet") || file.Contains("TT_"))  xsec = 815.96;
 
   // From https://cms-pdmv.cern.ch/mcm
-  if(file.Contains("WJetsToLNu_HT-100to200"))  xsec = 1817.0;
-  if(file.Contains("WJetsToLNu_HT-200to400"))  xsec = 471.6;
-  if(file.Contains("WJetsToLNu_HT-400to600"))  xsec = 55.61;
-  if(file.Contains("WJetsToLNu_HT-600toInf"))  xsec = 18.81;
+  // k-factors from https://mangano.web.cern.ch/mangano/public/MECCA/samples_50ns_miniaod.txt
+  // k-factors are ratio of https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+  // NLO/NNLO cross-sections to that of an inclusive sample in mcm at lower order (LO/NLO)
+  if(file.Contains("WJetsToLNu_HT-100to200"))  xsec = 1817.0*1.23;
+  if(file.Contains("WJetsToLNu_HT-200to400"))  xsec = 471.6*1.23;
+  if(file.Contains("WJetsToLNu_HT-400to600"))  xsec = 55.61*1.23;
+  if(file.Contains("WJetsToLNu_HT-600toInf"))  xsec = 18.81*1.23;
 
   if(file.Contains("WToENu"))   xsec = 16000.0;
   if(file.Contains("WToMuNu"))  xsec = 16100.0;
 
+  if(file.Contains("QCD_HT-100To250_13TeV-madgraph"))  xsec = 28730000.;
   if(file.Contains("QCD_HT_250To500_13TeV-madgraph"))  xsec = 670500.0;
   if(file.Contains("QCD_HT-500To1000_13TeV-madgraph")) xsec = 26740.0;
   if(file.Contains("QCD_HT_1000ToInf_13TeV-madgraph")) xsec = 769.7;
+
+  if(file.Contains("QCD_Pt-1800_")) xsec = 0.1091;
 
   if(file.Contains("QCD_Pt-5to10"))      xsec = 80710000000;
   if(file.Contains("QCD_Pt-10to15"))     xsec = 7528000000;
   if(file.Contains("QCD_Pt-15to30"))     xsec = 2237000000;
   if(file.Contains("QCD_Pt-30to50"))     xsec = 161500000;
   if(file.Contains("QCD_Pt-50to80"))     xsec = 22110000;
-  if(file.Contains("QCD_Pt-80to120"))    xsec = 3000114;
+  if(file.Contains("QCD_Pt-80to120"))    xsec = 3000114.3;
   if(file.Contains("QCD_Pt-120to170"))   xsec = 493200;
   if(file.Contains("QCD_Pt-170to300"))   xsec = 120300;
   if(file.Contains("QCD_Pt-300to470"))   xsec = 7475;
@@ -73,17 +88,32 @@ float cross_section(TString file){
   if(file.Contains("QCD_Pt-2400to3200")) xsec = 0.00644;
   if(file.Contains("QCD_Pt-3200"))       xsec = 0.000163;
 
-  if(file.Contains("T_tW-channel-DR"))            xsec = 35.0;
-  if(file.Contains("TToLeptons_t-channel"))       xsec = 45.0;
   if(file.Contains("TToLeptons_s-channel"))       xsec = 2.0;
-  if(file.Contains("Tbar_tW-channel-DR"))         xsec = 35.0;
-  if(file.Contains("TBarToLeptons_t-channel"))    xsec = 16.9;
+  if(file.Contains("TToLeptons_t-channel"))       xsec = 103.4;
+  if(file.Contains("T_tW-channel-DR"))            xsec = 35.0;
   if(file.Contains("TBarToLeptons_s-channel"))    xsec = 1.0;
+  if(file.Contains("TBarToLeptons_t-channel"))    xsec = 61.6;
+  if(file.Contains("Tbar_tW-channel-DR"))         xsec = 35.0;
 
-  if(file.Contains("DYJetsToLL_M-50_HT-100to200"))    xsec = 194.3;
-  if(file.Contains("DYJetsToLL_M-50_HT-200to400"))    xsec = 52.24;
-  if(file.Contains("DYJetsToLL_M-50_HT-400to600"))    xsec = 6.546;
-  if(file.Contains("DYJetsToLL_M-50_HT-600toInf"))    xsec = 2.179;
+  if(file.Contains("DYJetsToLL_M-50_HT-100to200"))    xsec = 194.3*1.27;
+  if(file.Contains("DYJetsToLL_M-50_HT-200to400"))    xsec = 52.24*1.27;
+  if(file.Contains("DYJetsToLL_M-50_HT-400to600"))    xsec = 6.546*1.27;
+  if(file.Contains("DYJetsToLL_M-50_HT-600toInf"))    xsec = 2.179*1.27;
+
+  if(file.Contains("ZJetsToNuNu_HT-100to200_Tune4C_13TeV-madgraph-tauola"))  xsec =372.6*1.27;
+  if(file.Contains("ZJetsToNuNu_HT-200to400_Tune4C_13TeV-madgraph-tauola"))  xsec =100.8*1.27;
+  if(file.Contains("ZJetsToNuNu_HT-400to600_Tune4C_13TeV-madgraph-tauola"))  xsec =11.99*1.27;
+  if(file.Contains("ZJetsToNuNu_HT-600toInf_Tune4C_13TeV-madgraph-tauola"))  xsec =4.113*1.27;
+
+  if(file.Contains("TTZJets_Tune4C_13TeV-madgraph-tauola"))    xsec = 0.7598;
+  if(file.Contains("TTWJets_Tune4C_13TeV-madgraph-tauola"))    xsec = 0.5662;
+  // Calculated at 13 TeV in
+  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV
+  // Higgs branching ratios from
+  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
+  if(file.Contains("ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp"))    xsec = 0.569*0.033658*0.8696;
+  if(file.Contains("ZH_HToBB_ZToNuNu_M-125_13TeV_powheg-herwigpp"))    xsec = 0.569*0.2*0.8696;
+  if(file.Contains("WH_HToBB_WToLNu_M-125_13TeV_powheg-herwigpp"))    xsec = 0.569*0.1086*1.380;
 
   if(xsec<=0) cout<<"Cross section not found for "<<file<<endl;
 
@@ -91,7 +121,9 @@ float cross_section(TString file){
 }
 
 // Returns list of directorites or files in folder
-vector<TString> dirlist(TString folder, TString inname, TString tag){
+vector<TString> dirlist(const TString &folder,
+                        const TString &inname,
+                        const TString &tag){
   TString pwd(gSystem->pwd());
   vector<TString> v_dirs;
   TSystemDirectory dir(folder, folder);
@@ -103,7 +135,7 @@ vector<TString> dirlist(TString folder, TString inname, TString tag){
     while ((file=static_cast<TSystemFile*>(next()))) {
       fname = file->GetName();
       if (inname=="dir") {
-        if ((file->IsDirectory() && !fname.Contains(".") && fname.EndsWith(tag))) v_dirs.push_back(fname);
+        if ((file->IsDirectory() && !fname.Contains(".") && fname.Contains(tag))) v_dirs.push_back(fname);
       } else  if(fname.Contains(inname)) v_dirs.push_back(fname);
     }
   } // if(files)
@@ -179,6 +211,7 @@ long double AddInQuadrature(long double x, long double y){
     y=x;
     x=temp;
   }
+  if(x==0.) return y;
   const long double rat=y/x;
   return fabs(x)*sqrt(1.0L+rat*rat);
 }
