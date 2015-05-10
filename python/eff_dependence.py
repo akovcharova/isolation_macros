@@ -8,16 +8,16 @@ ROOT.gStyle.SetOptTitle(0)
 # ROOT.gStyle.SetPaintTextFormat(".0f");
 
 varbins = {
-  # "pt":[10., 20., 30., 40., 50.,70., 90., 120., 150., 200., 300.],
-   "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
-  # "njets":[1],
-  # "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.],
-  # "met":[0.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.,1600.],
-  #"pv":[10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,45]
+    "pt":[10., 20., 30., 40., 50.,70., 90., 120., 150., 200., 300.],
+    "ht":[0., 50.,100.,250., 500., 750., 1000., 1250.,1500., 1750.,2000.,2500.],
+    "njets":[1],
+    "mj":[0.,50.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.],
+    "met":[0.,100.,200.,300.,400., 500., 600., 700., 800.,1000., 1200.,1400.,1600.],
+    "pv":[10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,45]
 }
 
 samples = []
-#samples.append("ttbar")
+samples.append("ttbar")
 #samples.append("wjets")
 samples.append("T1tttt1500")
 
@@ -51,16 +51,16 @@ for sample in samples:
       for channel in ['el','mu']:
         if (channel == 'el'):
           isotypes['reliso'] = ("I(R=0.3) < 0.16/0.21 [Veto WP]", 20, kRed, 1.2)
-          isotypes['miniso_tr10'] = ("I(mini) < 0.1 [No trig.]", 24, kBlack)
-          isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.5, I(mini) < 0.1 [VVVL trig.]", 25, kGreen+3)
+          isotypes['miniso_tr10'] = ("I(mini) < 0.1", 24, kBlack)
+          #isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.5, I(mini) < 0.1 [VVVL trig.]", 25, kGreen+3)
           #isotypes['reliso_trig'] = ("I_{ R=0.2} < 0.8, I_{ R=0.3} < 0.22/0.25", 25, kGreen+3)
-          isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.1 [Std trig.]", 25, kBlue)
+          #isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.1 [Std trig.]", 25, kBlue)
         else:
           isotypes['reliso'] = ("I(R=0.4) < 0.2 [Loose WP]", 20, kRed, 1.2)
-          isotypes['miniso_tr10'] = ("I(mini) < 0.2 [No trig.]", 24, kBlack)
-          isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.0, I(mini) < 0.2 [VVVL trig.]", 25, kGreen+3)
+          isotypes['miniso_tr10'] = ("I(mini) < 0.2", 24, kBlack)
+          #isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.0, I(mini) < 0.2 [VVVL trig.]", 25, kGreen+3)
           #isotypes['reliso_trig'] = ("I_{ R=0.2} < 0.8, I_{ R=0.3} < 0.22/0.25", 25, kGreen+3)
-          isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.2 [Std trig.]", 25, kBlue)
+          #isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.2 [Std trig.]", 25, kBlue)
 
 
 

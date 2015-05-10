@@ -16,6 +16,9 @@
 *.la
 *.a
 
+# Compiled python
+*.pyc
+
 # Compiled executables
 *.exe
 

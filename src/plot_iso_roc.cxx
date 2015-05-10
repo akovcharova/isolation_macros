@@ -19,10 +19,9 @@ using namespace std;
 int main(){
   styles style("1Dtitle"); style.setDefaultStyle();
 
-  //TString folder="/cms2r0/manuelf/root/small/archive/15-01-08/";
-  TString folder="/homes/manuelf/code/susy_cfa/out/";
-  TString folder_tt="/cms2r0/manuelf/root/small/archive/15-01-14/";
-  TString folder_pu="/cms2r0/manuelf/root/small/archive/14-12-21/";
+  TString folder="/cms5r0/ald77/archive/current/";
+  TString folder_tt = "/cms5r0/ald77/archive/current/";
+  TString folder_pu = "/cms5r0/ald77/archive/current/";
   // NTUPLES
   vector<TString> v_t1;
   v_t1.push_back(folder+"*T1tttt*1500_*PU20*");
@@ -33,9 +32,9 @@ int main(){
   vector<TString> v_t1pu40;
   v_t1pu40.push_back(folder_pu+"*T1tttt*1500_*PU40*");
   vector<TString> v_tt;
-  v_tt.push_back(folder+"/skim/small_TTJet_ht750.root");
+  v_tt.push_back(folder+"/skim/*TTJet*.root");
   vector<TString> v_tts;
-  v_tts.push_back(folder+"*TTJet*batch55*");
+  v_tts.push_back(folder+"*TTJets*batch9*");
   vector<TString> v_wjets;
   v_wjets.push_back(folder+"*WJet*");
 
@@ -54,7 +53,7 @@ int main(){
 
   vector<sample_class> mus_tt_t1; 
   mus_tt_t1.push_back(sample_class("T1tttt(1500,100) truth-matched prompt #mu", v_t1, "mus_tru_tm&&mus_sigid"));
-  mus_tt_t1.push_back(sample_class("tt non-truth-matched #mu", v_tt, "!mus_tru_tm&&mus_sigid"));
+  mus_tt_t1.push_back(sample_class("tt non-truth-matched #mu", v_tts, "!mus_tru_tm&&mus_sigid"));
 
   vector<sample_class> mus_t1; 
   mus_t1.push_back(sample_class("T1tttt(1500,100) truth-matched prompt #mu", v_t1, "mus_tru_tm&&mus_sigid"));
@@ -84,7 +83,7 @@ int main(){
 
   vector<sample_class> els_tt_t1; 
   els_tt_t1.push_back(sample_class("T1tttt(1500,100) truth-matched prompt e", v_t1, "els_tru_tm&&els_sigid&&els_ispf"));
-  els_tt_t1.push_back(sample_class("tt non-truth-matched e", v_tt, "!els_tru_tm&&els_sigid&&els_ispf"));
+  els_tt_t1.push_back(sample_class("tt non-truth-matched e", v_tts, "!els_tru_tm&&els_sigid&&els_ispf"));
 
   vector<sample_class> els_t1cpu20; 
   els_t1cpu20.push_back(sample_class("T1tttt(1200,800) truth-matched prompt e", v_t1c, "els_tru_tm&&els_sigid&&els_ispf"));
@@ -105,19 +104,19 @@ int main(){
   // Markers to be plot on curves: 29 is a star, 8 a circle
   int mini_style(8); float mini_size(2);
   vector<marker_class> mus_std, mus_new, els_std, mus_cuts_miniso, els_cuts_miniso;
-  els_std.push_back(marker_class(0.22, 4, 28, 29));
+  els_std.push_back(marker_class(0.1, 4, 28, 29));
   mus_std.push_back(marker_class(0.2, 4, 1, 29));
   mus_new.push_back(marker_class(0.2, 4, 28, 29));
   els_cuts_miniso.push_back(marker_class(0.4,  mini_size, 4, mini_style));
   els_cuts_miniso.push_back(marker_class(0.2,  mini_size, 4, mini_style));
-  els_cuts_miniso.push_back(marker_class(0.1,  5, 4, 29));
   //els_cuts_miniso.push_back(marker_class(0.1, mini_size, 4, mini_style));
+  els_cuts_miniso.push_back(marker_class(0.1,  5, 4, 29));
   els_cuts_miniso.push_back(marker_class(0.05, mini_size, 4, mini_style));
 
   mus_cuts_miniso.push_back(marker_class(0.4,  mini_size, 4, mini_style));
-  mus_cuts_miniso.push_back(marker_class(0.2,  mini_size, 4, mini_style));
-  //mus_cuts_miniso.push_back(marker_class(0.1,  mini_size, 4, mini_style));
-  mus_cuts_miniso.push_back(marker_class(0.1, 5, 4, 29));
+  //mus_cuts_miniso.push_back(marker_class(0.2,  mini_size, 4, mini_style));
+  mus_cuts_miniso.push_back(marker_class(0.2, 5, 4, 29));
+  mus_cuts_miniso.push_back(marker_class(0.1,  mini_size, 4, mini_style));
   mus_cuts_miniso.push_back(marker_class(0.05,  mini_size, 4, mini_style));
 
   ///////////////////// Isolation variables /////////////////////
@@ -129,7 +128,7 @@ int main(){
   mus_vars.push_back(var_class("mus_reliso_r01",0,10,"Rel. Iso. (R=0.1)",2));
   mus_vars.push_back(var_class("min(mus_reliso_r02,mus_miniso_tr10)",0,10,"Mini Iso. (0.05<R<0.2)",4,1,mus_cuts_miniso));
   //mus_vars.push_back(var_class("min(mus_reliso_r02,mus_miniso_tr15)",0,10,"Mini Iso. kt 15 (0.05<R<0.2)",13,1));
-  mus_vars.push_back(var_class("min(mus_reliso_r02,mus_miniso_tr10_pfpu)",0,10,"Mini Iso. PFPU (0.05<R<0.2)",13,1));
+  //mus_vars.push_back(var_class("min(mus_reliso_r02,mus_miniso_tr10_pfpu)",0,10,"Mini Iso. PFPU (0.05<R<0.2)",13,1));
 
   vector<var_class> els_vars;
   els_vars.push_back(var_class("els_reliso_r04",0,10,"Rel. Iso. (R=0.4)",1));
@@ -138,7 +137,7 @@ int main(){
   els_vars.push_back(var_class("els_reliso_r015",0,10,"Rel. Iso. (R=0.15)",3));
   els_vars.push_back(var_class("els_reliso_r01",0,10,"Rel. Iso. (R=0.1)",2));
   els_vars.push_back(var_class("min(els_reliso_r02,els_miniso_tr10)",0,10,"Mini Iso. (0.05<R<0.2)",4,1,els_cuts_miniso));
-  els_vars.push_back(var_class("min(els_reliso_r02,els_miniso_tr10_pfpu)",0,10,"Mini Iso. PFPU (0.05<R<0.2)",13,1));
+  //els_vars.push_back(var_class("min(els_reliso_r02,els_miniso_tr10_pfpu)",0,10,"Mini Iso. PFPU (0.05<R<0.2)",13,1));
 
   vector<var_class> mus_vars_ptrel;
   mus_vars_ptrel.push_back(var_class("mus_reliso_r04",0,10,"Rel. Iso. (R=0.4)",1,1,mus_std));
@@ -158,21 +157,19 @@ int main(){
 
   ///////////////////// ROCs to be plotted /////////////////////
 
-  TString mus_ptcuts[] = {"mus_pt>=10&&mus_pt<20","mus_pt>=20&&mus_pt<30","mus_pt>=50&&mus_pt<100",
-  			  "mus_pt>=100&&mus_pt<200","mus_pt>=200"};
-  TString els_ptcuts[] = {"els_pt>=10&&els_pt<20","els_pt>=20&&els_pt<30","els_pt>=50&&els_pt<100",
-  			  "els_pt>=100&&els_pt<200","els_pt>=200"};
-  TString htcuts[] = {"ht<1000","ht>=750&&ht<1000"};
-  TString metcuts[] = {"1","met>=200&&met<600"};
+  TString mus_ptcuts[] = {"mus_pt>20&&mus_pt<=50","mus_pt>50&&mus_pt<=100","mus_pt>100&&mus_pt<=200", "mus_pt>200", "mus_pt>20"};
+  TString els_ptcuts[] = {"els_pt>20&&els_pt<=50","els_pt>50&&els_pt<=100","els_pt>100&&els_pt<=200", "els_pt>200", "els_pt>20"};
+  TString htcuts[] = {"ht>500"};
+  TString metcuts[] = {"1"};
   TString cuts;
   for(int iht(0); iht<1; iht++){
     for(int imet(0); imet<1; imet++){
-      for(int ipt(0); ipt<1; ipt++){ 
+      for(int ipt(0); ipt<5; ipt++){ 
   	cuts = mus_ptcuts[ipt]+"&&"+htcuts[iht]+"&&"+metcuts[imet];
-  	DrawROC(mus_t1, mus_vars, cuts, "mus_t1");
+  	DrawROC(mus_tt_t1, mus_vars, cuts, "mus_tt_t1");
   	//DrawROC(mus_tt_t1, mus_vars_ptrel, cuts, "mus_t1_ptrel");
   	cuts = els_ptcuts[ipt]+"&&"+htcuts[iht]+"&&"+metcuts[imet];
-  	DrawROC(els_t1, els_vars, cuts, "els_t1");
+  	DrawROC(els_tt_t1, els_vars, cuts, "els_tt_t1");
   	//DrawROC(els_tt_t1, els_vars_ptrel, cuts, "els_t1_ptrel");
 
       }
@@ -304,7 +301,7 @@ void DrawROC(vector<sample_class> samples, vector<var_class> vars, TString cuts,
   cuts.ReplaceAll("/","_"); cuts.ReplaceAll("*",""); cuts.ReplaceAll("&&","_");
   cuts.ReplaceAll(">",""); cuts.ReplaceAll("<",""); cuts.ReplaceAll("=","");
   cuts.ReplaceAll("+",""); 
-  TString pname("eps/roc_"+tag+"_"+cuts+".eps");  
+  TString pname("eps/roc_"+tag+"_"+cuts+".pdf");  
   can.Print(pname);
 
   for(unsigned sam(0); sam < samples.size(); sam++)

@@ -27,12 +27,12 @@ int main(){
   // string isostr = "miniso"; 
   // const double iso_cut[2] = {0.05, 0.3}; //el, mu
 
-  TString basedir = "/cms5r0/manuelf/root/archive/15-01-30/";
+  TString basedir = "/cms5r0/ald77/archive/current/";
 
   vector<TString> samples;
   vector<TString> fnames;
   samples.push_back("*-T1tttt_2J_mGl-1500_mLSP-100_*"); fnames.push_back("T1tttt1500");
-  //samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
+  samples.push_back("*_TTJets*"); fnames.push_back("ttbar");
   // samples.push_back("*_QCD_*"); fnames.push_back("qcd");
   // samples.push_back("*-T1tttt_2J_mGl-1200_mLSP-800_*PU20*"); fnames.push_back("T1tttt1200");
   // samples.push_back("*_WJetsToLNu*"); fnames.push_back("wjets");
@@ -105,7 +105,7 @@ int main(){
 
             h_ht[iiso][channel::el][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::el][this_mode].Fill(tree.njets(), weight);
-            h_mj[iiso][channel::el][this_mode].Fill(tree.mj_30(), weight);
+            h_mj[iiso][channel::el][this_mode].Fill(tree.mj(), weight);
             h_met[iiso][channel::el][this_mode].Fill(tree.met(), weight);
             h_pv[iiso][channel::el][this_mode].Fill(tree.ntrupv(), weight);
           }
@@ -129,7 +129,7 @@ int main(){
 
             h_ht[iiso][channel::mu][this_mode].Fill(tree.ht(), weight);
             h_njets[iiso][channel::mu][this_mode].Fill(tree.njets(), weight);
-            h_mj[iiso][channel::mu][this_mode].Fill(tree.mj_30(), weight);
+            h_mj[iiso][channel::mu][this_mode].Fill(tree.mj(), weight);
             h_met[iiso][channel::mu][this_mode].Fill(tree.met(), weight);
             h_pv[iiso][channel::mu][this_mode].Fill(tree.ntrupv(), weight);
           }
@@ -168,20 +168,6 @@ bool passIsolation(const small_tree_quick &tree, int ilep, bool isElectron, bool
              || (tree.els_reliso_r02()[ilep] < iso_cut));
     else 
       return ((tree.mus_miniso_tr10()[ilep] < iso_cut) 
-             || (tree.mus_reliso_r02()[ilep] < iso_cut));
-  } else if (isotype=="miniso_tr10_pfpu") {
-    if (isElectron) 
-      return ((tree.els_miniso_tr10_pfpu()[ilep] < iso_cut) 
-             || (tree.els_reliso_r02()[ilep] < iso_cut));
-    else 
-      return ((tree.mus_miniso_tr10_pfpu()[ilep] < iso_cut) 
-             || (tree.mus_reliso_r02()[ilep] < iso_cut));
-  } else if (isotype=="miniso_tr07") {
-    if (isElectron) 
-      return ((tree.els_miniso_tr07()[ilep] < iso_cut) 
-             || (tree.els_reliso_r02()[ilep] < iso_cut));
-    else 
-      return ((tree.mus_miniso_tr07()[ilep] < iso_cut) 
              || (tree.mus_reliso_r02()[ilep] < iso_cut));
   } else if (isotype=="none") {
     return true;
