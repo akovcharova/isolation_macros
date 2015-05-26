@@ -119,28 +119,28 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short c
 	if(mt<150.){
 	  if(tree.mj()<600.){
 	    counts.at(0).back() += weight;
-	    if(tree.nisotks()<2) counts.at(1).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(1).back() += weight;
 	  }else{
 	    counts.at(2).back() += weight;
-	    if(tree.nisotks()<2) counts.at(3).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(3).back() += weight;
 	  }
 	}else{
 	  if(tree.mj()<600.){
 	    counts.at(4).back() += weight;
-	    if(tree.nisotks()<2) counts.at(5).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(5).back() += weight;
 	  }else{
 	    counts.at(6).back() += weight;
-	    if(tree.nisotks()<2) counts.at(7).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(7).back() += weight;
 	  }
 	}
       }else if(nleps==2){
 	counts.at(8).back() += weight;
-	if(tree.nisotks()<3) counts.at(9).back() += weight;
+	if(tree.ntks_chg()<2) counts.at(9).back() += weight;
       }
     }
     if(st>200. && nleps==1){
       counts.at(10).back() += weight;
-      if(tree.nisotks()<2) counts.at(11).back() += weight;
+      if(tree.ntks_chg()<1) counts.at(11).back() += weight;
     }
 
     CountMiniIso(tree, nleps, mt, st);
@@ -149,28 +149,28 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short c
 	if(mt<150.){
 	  if(tree.mj()<600.){
 	    counts.at(12).back() += weight;
-	    if(tree.nisotks()<2) counts.at(13).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(13).back() += weight;
 	  }else{
 	    counts.at(14).back() += weight;
-	    if(tree.nisotks()<2) counts.at(15).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(15).back() += weight;
 	  }
 	}else{
 	  if(tree.mj()<600.){
 	    counts.at(16).back() += weight;
-	    if(tree.nisotks()<2) counts.at(17).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(17).back() += weight;
 	  }else{
 	    counts.at(18).back() += weight;
-	    if(tree.nisotks()<2) counts.at(19).back() += weight;
+	    if(tree.ntks_chg()<1) counts.at(19).back() += weight;
 	  }
 	}
       }else if(nleps==2){
 	counts.at(20).back() += weight;
-	if(tree.nisotks()<3) counts.at(21).back() += weight;
+	if(tree.ntks()<3) counts.at(21).back() += weight;
       }
     }
     if(st>200. && nleps==1){
       counts.at(22).back() += weight;
-      if(tree.nisotks()<2) counts.at(23).back() += weight;
+      if(tree.ntks_chg()<1) counts.at(23).back() += weight;
     }
   }
 }
