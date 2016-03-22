@@ -5,14 +5,14 @@
 #include <vector>
 #include "TString.h"
 
-#include "small_tree_quick.hpp"
+#include "small_tree_basic.hpp"
 
-void ProcessTree(small_tree_quick &tree, std::vector<std::vector<float> > &counts, 
+void ProcessTree(small_tree_basic &tree, std::vector<std::vector<float> > &counts, 
 		 std::vector<std::vector<float> > &w2, short cut_type = 0);
 
-void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st, 
+void CountRelIso(small_tree_basic &tree, int &nleps, float &mt, float &st, 
 		 float elcut_b, float elcut_e, float mucut);
-void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st, float elcut, float mucut);
+void CountMiniIso(small_tree_basic &tree, int &nleps, float &mt, float &st, float elcut, float mucut);
 
 void MakeTable(std::vector<std::vector<float> > &counts, std::vector<std::vector<float> > &w2,
 	       const std::vector<TString> &cuts,

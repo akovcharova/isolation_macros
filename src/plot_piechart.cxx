@@ -8,20 +8,20 @@
 #include "TPie.h"
 #include "TCanvas.h"
 
-#include "small_tree_quick.hpp"
+#include "small_tree_basic.hpp"
 #include "timer.hpp"
 #include "utilities.hpp"
 
 using namespace std;
 
 int main(){
-  small_tree_quick ttbar("archive/current/skim/*TTJets*");
-  small_tree_quick wjets("archive/current/skim/*WJetsToLNu_HT*");
-  small_tree_quick single_t("archive/current/skim/*_T*-channel*");
-  small_tree_quick ttv("archive/current/skim/*TTWJets*");
+  small_tree_basic ttbar("archive/current/skim/*TTJets*");
+  small_tree_basic wjets("archive/current/skim/*WJetsToLNu_HT*");
+  small_tree_basic single_t("archive/current/skim/*_T*-channel*");
+  small_tree_basic ttv("archive/current/skim/*TTWJets*");
   ttv.Add("archive/current/skim/*TTZJets*");
 
-  small_tree_quick other("archive/current/skim/*QCD_HT*");
+  small_tree_basic other("archive/current/skim/*QCD_HT*");
   other.Add("archive/current/skim/*ZJetsToNuNu_HT*");
   other.Add("archive/current/skim/*WH_HToBB*");
   other.Add("archive/current/skim/*DYJetsToLL*");
@@ -85,7 +85,7 @@ int main(){
   }
 }
 
-void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short cut_type){
+void ProcessTree(small_tree_basic &tree, vector<vector<float> > &counts, short cut_type){
   for(size_t icut = 0; icut < counts.size(); ++icut){
     counts.at(icut).push_back(0.);
   }
@@ -96,10 +96,8 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short c
     timer.Iterate();
     tree.GetEntry(entry);
 
-    int nl = ((tree.mc_type() & 0xF00) >> 8);
-    int ntl = ((tree.mc_type() & 0xF0) >> 4);
-    int nt = (tree.mc_type() & 0xF);
-    int nth = nt - ntl;
+    int nl = tree.ntruleps();
+    int nth = tree.ntrutaush();
     short this_type = 1;
     if(nl+nth>=2){
       this_type = 2;
@@ -119,28 +117,28 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short c
 	if(mt<150.){
 	  if(tree.mj()<600.){
 	    counts.at(0).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(1).back() += weight;
+	    if(tree.ntks()<1) counts.at(1).back() += weight;
 	  }else{
 	    counts.at(2).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(3).back() += weight;
+	    if(tree.ntks()<1) counts.at(3).back() += weight;
 	  }
 	}else{
 	  if(tree.mj()<600.){
 	    counts.at(4).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(5).back() += weight;
+	    if(tree.ntks()<1) counts.at(5).back() += weight;
 	  }else{
 	    counts.at(6).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(7).back() += weight;
+	    if(tree.ntks()<1) counts.at(7).back() += weight;
 	  }
 	}
       }else if(nleps==2){
 	counts.at(8).back() += weight;
-	if(tree.ntks_chg()<2) counts.at(9).back() += weight;
+	if(tree.ntks()<2) counts.at(9).back() += weight;
       }
     }
     if(st>200. && nleps==1){
       counts.at(10).back() += weight;
-      if(tree.ntks_chg()<1) counts.at(11).back() += weight;
+      if(tree.ntks()<1) counts.at(11).back() += weight;
     }
 
     CountMiniIso(tree, nleps, mt, st);
@@ -149,18 +147,18 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short c
 	if(mt<150.){
 	  if(tree.mj()<600.){
 	    counts.at(12).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(13).back() += weight;
+	    if(tree.ntks()<1) counts.at(13).back() += weight;
 	  }else{
 	    counts.at(14).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(15).back() += weight;
+	    if(tree.ntks()<1) counts.at(15).back() += weight;
 	  }
 	}else{
 	  if(tree.mj()<600.){
 	    counts.at(16).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(17).back() += weight;
+	    if(tree.ntks()<1) counts.at(17).back() += weight;
 	  }else{
 	    counts.at(18).back() += weight;
-	    if(tree.ntks_chg()<1) counts.at(19).back() += weight;
+	    if(tree.ntks()<1) counts.at(19).back() += weight;
 	  }
 	}
       }else if(nleps==2){
@@ -170,12 +168,12 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, short c
     }
     if(st>200. && nleps==1){
       counts.at(22).back() += weight;
-      if(tree.ntks_chg()<1) counts.at(23).back() += weight;
+      if(tree.ntks()<1) counts.at(23).back() += weight;
     }
   }
 }
 
-void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st){
+void CountRelIso(small_tree_basic &tree, int &nleps, float &mt, float &st){
   nleps = 0;
   mt = 0.;
   st = 0.;
@@ -183,7 +181,7 @@ void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st){
   for(size_t i = 0; i < tree.mus_pt().size(); ++i){
     if(tree.mus_pt().at(i)>20.
        && tree.mus_sigid().at(i)
-       && tree.mus_reliso_r04().at(i)<0.12){
+       && tree.mus_reliso().at(i)<0.12){
       ++nleps;
       if(tree.mus_pt().at(i)>high_pt){
 	high_pt = tree.mus_pt().at(i);
@@ -210,7 +208,7 @@ void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st){
   }
 }
 
-void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st){
+void CountMiniIso(small_tree_basic &tree, int &nleps, float &mt, float &st){
   nleps = 0;
   mt = 0.;
   st = 0.;
@@ -218,7 +216,7 @@ void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st){
   for(size_t i = 0; i < tree.mus_pt().size(); ++i){
     if(tree.mus_pt().at(i)>20.
        && tree.mus_sigid().at(i)
-       && tree.mus_miniso_tr10().at(i)<0.4){
+       && tree.mus_miniso().at(i)<0.4){
       ++nleps;
       if(tree.mus_pt().at(i)>high_pt){
 	high_pt = tree.mus_pt().at(i);
@@ -229,7 +227,7 @@ void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st){
   for(size_t i = 0; i < tree.els_pt().size(); ++i){
     if(tree.els_pt().at(i)>20.
        && tree.els_sigid().at(i)
-       && tree.els_miniso_tr10().at(i)<0.1){
+       && tree.els_miniso().at(i)<0.1){
       ++nleps;
       if(tree.els_pt().at(i)>high_pt){
 	high_pt = tree.els_pt().at(i);

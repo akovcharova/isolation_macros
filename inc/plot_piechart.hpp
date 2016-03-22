@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-#include "small_tree_quick.hpp"
+#include "small_tree_basic.hpp"
 
-void ProcessTree(small_tree_quick &tree, std::vector<std::vector<float> > &counts, short cut_type = 0);
+void ProcessTree(small_tree_basic &tree, std::vector<std::vector<float> > &counts, short cut_type = 0);
 
-void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st);
-void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st);
+void CountRelIso(small_tree_basic &tree, int &nleps, float &mt, float &st);
+void CountMiniIso(small_tree_basic &tree, int &nleps, float &mt, float &st);
 
 void MakeTable(const std::vector<std::vector<float> > &counts,
 	       const std::vector<std::string> &cuts,

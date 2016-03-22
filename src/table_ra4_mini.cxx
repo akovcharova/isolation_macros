@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "small_tree_quick.hpp"
+#include "small_tree_basic.hpp"
 #include "timer.hpp"
 #include "utilities.hpp"
 
@@ -17,20 +17,20 @@ vector<int> elcuts, mucuts;
 int main(){
   string folder("archive/15-03-03/skim/");
 
-  small_tree_quick ttbar(folder+"*TTJets*");
-  small_tree_quick wjets(folder+"*_WJets*");
-  small_tree_quick single(folder+"*-channel*");
-  small_tree_quick ttw(folder+"*TTWJets*");
-  small_tree_quick ttz(folder+"*TTZJets*");
-  small_tree_quick ttv(folder+"*TTZJets*");
+  small_tree_basic ttbar(folder+"*TTJets*");
+  small_tree_basic wjets(folder+"*_WJets*");
+  small_tree_basic single(folder+"*-channel*");
+  small_tree_basic ttw(folder+"*TTWJets*");
+  small_tree_basic ttz(folder+"*TTZJets*");
+  small_tree_basic ttv(folder+"*TTZJets*");
   ttv.Add(folder+"*TTWJets*");
-  small_tree_quick other(folder+"*QCD_HT*");
+  small_tree_basic other(folder+"*QCD_HT*");
   //other.Add(folder+"*_WJet*");
   other.Add(folder+"*_ZJet*");
   other.Add(folder+"*DY*");
   other.Add(folder+"*WH_HToBB*");
-  small_tree_quick t1tttt_nc(folder+"*T1tttt*1500*100*");
-  small_tree_quick t1tttt_c(folder+"*T1tttt*1200*800*");
+  small_tree_basic t1tttt_nc(folder+"*T1tttt*1500*100*");
+  small_tree_basic t1tttt_c(folder+"*T1tttt*1200*800*");
 
   vector<TString> isocuts, cuts, othercuts;
   // isocuts.push_back("reliso_t_t");
@@ -86,7 +86,7 @@ int main(){
   }
 }
 
-void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts, 
+void ProcessTree(small_tree_basic &tree, vector<vector<float> > &counts, 
 		 vector<vector<float> > &w2, short cut_type){
   for(size_t icut = 0; icut < counts.size(); ++icut){
     counts.at(icut).push_back(0.);
@@ -99,10 +99,8 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts,
     timer.Iterate();
     tree.GetEntry(entry);
 
-    int nl = ((tree.mc_type() & 0xF00) >> 8);
-    int ntl = ((tree.mc_type() & 0xF0) >> 4);
-    int nt = (tree.mc_type() & 0xF);
-    int nth = nt - ntl;
+    int nl = tree.ntruleps();
+    int nth = tree.ntrutaush();
     short this_type = 1;
     if(nl==2){
       this_type = 3;
@@ -227,7 +225,7 @@ void ProcessTree(small_tree_quick &tree, vector<vector<float> > &counts,
   }
 }
 
-void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st, 
+void CountRelIso(small_tree_basic &tree, int &nleps, float &mt, float &st, 
 		 float elcut_b, float elcut_e, float mucut){
   nleps = 0;
   mt = 0.;
@@ -236,7 +234,7 @@ void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st,
   for(size_t i = 0; i < tree.mus_pt().size(); ++i){
     if(tree.mus_pt().at(i)>20.
        && tree.mus_sigid().at(i)
-       && tree.mus_reliso_r04().at(i)<mucut){
+       && tree.mus_reliso().at(i)<mucut){
       ++nleps;
       if(tree.mus_pt().at(i)>high_pt){
 	high_pt = tree.mus_pt().at(i);
@@ -263,7 +261,7 @@ void CountRelIso(small_tree_quick &tree, int &nleps, float &mt, float &st,
   }
 }
 
-void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st, float elcut, float mucut){
+void CountMiniIso(small_tree_basic &tree, int &nleps, float &mt, float &st, float elcut, float mucut){
   nleps = 0;
   mt = 0.;
   st = 0.;
@@ -271,7 +269,7 @@ void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st, floa
   for(size_t i = 0; i < tree.mus_pt().size(); ++i){
     if(tree.mus_pt().at(i)>20.
        && tree.mus_sigid().at(i)
-       && tree.mus_miniso_tr10().at(i)<mucut){
+       && tree.mus_miniso().at(i)<mucut){
       ++nleps;
       if(tree.mus_pt().at(i)>high_pt){
 	high_pt = tree.mus_pt().at(i);
@@ -282,7 +280,7 @@ void CountMiniIso(small_tree_quick &tree, int &nleps, float &mt, float &st, floa
   for(size_t i = 0; i < tree.els_pt().size(); ++i){
     if(tree.els_pt().at(i)>20.
        && tree.els_sigid().at(i)
-       && tree.els_miniso_tr10().at(i)<elcut){
+       && tree.els_miniso().at(i)<elcut){
       ++nleps;
       if(tree.els_pt().at(i)>high_pt){
 	high_pt = tree.els_pt().at(i);
