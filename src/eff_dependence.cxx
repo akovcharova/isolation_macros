@@ -31,7 +31,7 @@ int main(){
 
   vector<TString> samples;
   vector<TString> fnames;
-  samples.push_back("*1200*800*.root"); fnames.push_back("T1tttt NC");
+  samples.push_back("*1500*100*.root"); fnames.push_back("T1tttt NC");
   samples.push_back("*1200*800*.root"); fnames.push_back("T1tttt C");
   samples.push_back("TTJets.root"); fnames.push_back("ttbar");
   // samples.push_back("*_QCD_*"); fnames.push_back("qcd");
