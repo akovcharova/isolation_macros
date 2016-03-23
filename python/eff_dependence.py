@@ -3,8 +3,18 @@ import os,array,sys
 from rebin_tools import *
 # from rootpy.interactive import wait
 
-ROOT.gStyle.SetOptStat(0)
-ROOT.gStyle.SetOptTitle(0)
+def smoothBinning(hist):
+  for i in range(0,hist.GetNbinsX()):
+    denom = float(hist.GetBinWidth(i+1))
+    newBin = float(hist.GetBinContent(i+1))/denom
+    newErr = float(hist.GetBinError(i+1))/denom
+    hist.SetBinContent(i+1,newBin)
+    hist.SetBinError(i+1,newErr)
+  
+  return
+
+gStyle.SetOptStat(0)
+gStyle.SetOptTitle(0)
 # ROOT.gStyle.SetPaintTextFormat(".0f");
 
 varbins = {
@@ -19,15 +29,16 @@ varbins = {
 samples = []
 samples.append("ttbar")
 #samples.append("wjets")
-samples.append("T1tttt1500")
+samples.append("T1tttt NC")
+samples.append("T1tttt C")
 
 isotypes = {} 
 
 legend_order = []
-legend_order.append('miniso_tr10')
-legend_order.append('miniso_tr10_r03_vvl')
+legend_order.append('miniso')
+#legend_order.append('miniso')
 #legend_order.append('reliso_trig')
-legend_order.append('miniso_tr10_r03_04')
+#legend_order.append('miniso')
 legend_order.append('reliso')
 
 leptons = ['electron', 'muon']
@@ -51,13 +62,13 @@ for sample in samples:
       for channel in ['el','mu']:
         if (channel == 'el'):
           isotypes['reliso'] = ("I(R=0.3) < 0.16/0.21 [Veto WP]", 20, kRed, 1.2)
-          isotypes['miniso_tr10'] = ("I(mini) < 0.1", 24, kBlack)
+          isotypes['miniso'] = ("I(mini) < 0.1", 24, kBlack)
           #isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.5, I(mini) < 0.1 [VVVL trig.]", 25, kGreen+3)
           #isotypes['reliso_trig'] = ("I_{ R=0.2} < 0.8, I_{ R=0.3} < 0.22/0.25", 25, kGreen+3)
           #isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.1 [Std trig.]", 25, kBlue)
         else:
           isotypes['reliso'] = ("I(R=0.4) < 0.2 [Loose WP]", 20, kRed, 1.2)
-          isotypes['miniso_tr10'] = ("I(mini) < 0.2", 24, kBlack)
+          isotypes['miniso'] = ("I(mini) < 0.2", 24, kBlack)
           #isotypes['miniso_tr10_r03_vvl'] = ("I(R=0.3) < 1.0, I(mini) < 0.2 [VVVL trig.]", 25, kGreen+3)
           #isotypes['reliso_trig'] = ("I_{ R=0.2} < 0.8, I_{ R=0.3} < 0.22/0.25", 25, kGreen+3)
           #isotypes['miniso_tr10_r03_04'] = ("I(R=0.3) < 0.4, I(mini) < 0.2 [Std trig.]", 25, kBlue)
